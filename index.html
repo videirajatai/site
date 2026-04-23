@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <meta name="description" content="Igreja Videira de Jataí - Um lugar de fé, amor e esperança. Participe dos nossos cultos, contribua com suas ofertas e viva um encontro com Deus.">
-    <meta name="keywords" content="Igreja Videira, Jataí, Pastor Germerson Araujo, ofertas online, PIX, Encontro com Deus">
+    <meta name="description" content="Igreja Videira de Jataí - Um lugar de fé, amor e esperança. Participe dos nossos cultos, células e viva um encontro com Deus.">
+    <meta name="keywords" content="Igreja Videira, Jataí, Pastor Germerson Araujo, células, ofertas PIX, Encontro com Deus">
     <title>Igreja Videira de Jataí | Fé que floresce</title>
     
     <!-- Fonts & Icons -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     
     <style>
@@ -28,7 +28,6 @@
             scroll-behavior: smooth;
         }
 
-        /* Custom Scrollbar */
         ::-webkit-scrollbar {
             width: 8px;
         }
@@ -40,7 +39,6 @@
             border-radius: 12px;
         }
 
-        /* Reusable variables */
         :root {
             --primary: #7c3a6e;
             --primary-dark: #562a4d;
@@ -54,7 +52,6 @@
             --transition: all 0.35s cubic-bezier(0.2, 0.9, 0.4, 1.1);
         }
 
-        /* Background gradient animated */
         body::before {
             content: "";
             position: fixed;
@@ -67,7 +64,6 @@
             z-index: -2;
         }
 
-        /* Header Glass */
         .header {
             position: fixed;
             top: 0;
@@ -184,7 +180,6 @@
             color: #7c3a6e;
         }
 
-        /* Hero Section */
         .hero {
             min-height: 100vh;
             background: linear-gradient(115deg, rgba(0,0,0,0.55), rgba(0,0,0,0.3)), url('https://images.unsplash.com/photo-1501618669935-18b6ecb13d6d?q=80&w=2070&auto=format') center/cover no-repeat fixed;
@@ -268,7 +263,6 @@
             color: white;
         }
 
-        /* Reveal animations */
         .reveal {
             opacity: 0;
             transform: translateY(32px);
@@ -304,7 +298,6 @@
             padding-left: 1rem;
         }
 
-        /* cards */
         .cards-grid {
             display: flex;
             flex-wrap: wrap;
@@ -331,10 +324,6 @@
             font-size: 2.8rem;
             color: #7c3a6e;
             margin-bottom: 1rem;
-        }
-        .info-card h3 {
-            font-size: 1.6rem;
-            margin-bottom: 0.5rem;
         }
         .pastor-card {
             display: flex;
@@ -375,29 +364,132 @@
             border-left: 6px solid #b8724b;
         }
 
-        /* Horarios */
+        /* ===== SEÇÃO HORÁRIOS E CÉLULAS ===== */
         .horarios-wrapper {
             display: flex;
             flex-wrap: wrap;
             gap: 2rem;
             justify-content: center;
         }
-        .horario-item {
-            background: rgba(255, 245, 235, 0.7);
-            backdrop-filter: blur(8px);
-            border-radius: 32px;
-            padding: 1.5rem 2rem;
-            width: 240px;
-            text-align: center;
-            transition: 0.2s;
-            border: 1px solid #eadbbe;
+        /* Cards de destaque (Culto Celebração e Culto KIDS) */
+        .card-destaque {
+            flex: 1 1 300px;
+            background: white;
+            border-radius: 28px;
+            padding: 1.5rem;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+            border: 1px solid #f0e4d4;
+            transition: 0.25s ease;
         }
-        .horario-item i {
-            font-size: 2rem;
+        .card-destaque:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 30px -12px rgba(0, 0, 0, 0.1);
+            border-color: #d9b48b;
+        }
+        .destaque-titulo {
+            font-size: 1.4rem;
+            font-weight: 700;
             color: #7c3a6e;
+            margin-bottom: 0.5rem;
+        }
+        .destaque-dia, .destaque-endereco {
+            font-size: 0.9rem;
+            color: #4a3b2c;
+            margin-top: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .destaque-dia i, .destaque-endereco i {
+            width: 20px;
+            color: #b8724b;
+        }
+        /* Cards das células */
+        .horario-item-celula {
+            background: white;
+            border-radius: 28px;
+            padding: 1.2rem;
+            width: 280px;
+            transition: 0.25s ease;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.04);
+            border: 1px solid #f0e4d4;
+            display: flex;
+            flex-direction: column;
+            gap: 0.6rem;
+            position: relative;
+        }
+        .horario-item-celula:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 30px -12px rgba(0,0,0,0.1);
+            border-color: #d9b48b;
+        }
+        .btn-whatsapp-icon-celula {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: #25D366;
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            color: white;
+            text-decoration: none;
+            transition: 0.2s;
+        }
+        .btn-whatsapp-icon-celula:hover {
+            background: #128C7E;
+            transform: scale(1.05);
+        }
+        .card-dia {
+            background: #f9efe3;
+            display: inline-block;
+            padding: 0.2rem 0.8rem;
+            border-radius: 40px;
+            font-weight: 700;
+            font-size: 0.9rem;
+            width: fit-content;
+            color: #7c3a6e;
+            margin-top: 0.2rem;
+        }
+        .card-setor {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #b8724b;
+            background: rgba(217,180,139,0.15);
+            padding: 0.2rem 0.8rem;
+            border-radius: 30px;
+            width: fit-content;
+        }
+        .card-lider {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+            color: #2d2a3e;
+        }
+        .card-endereco {
+            font-size: 0.75rem;
+            color: #6b5a4a;
+            line-height: 1.4;
+            display: flex;
+            gap: 6px;
+            align-items: flex-start;
+        }
+        .card-endereco i {
+            color: #a17c4b;
+            margin-top: 2px;
+        }
+        .loading-celulas {
+            text-align: center;
+            padding: 2rem;
+            color: #7c3a6e;
+            font-weight: 500;
         }
 
-        /* Ofertas section - QR Code e PIX */
+        /* Ofertas */
         .ofertas-grid {
             display: flex;
             flex-wrap: wrap;
@@ -456,7 +548,6 @@
             background: #a15883;
         }
 
-        /* Encontro com Deus - Destaque especial */
         .encontro-destaque {
             background: linear-gradient(125deg, #7c3a6e, #b8724b);
             border-radius: 60px;
@@ -493,7 +584,6 @@
             background: #fef2e0;
         }
 
-        /* Contato + form */
         .contact-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -546,7 +636,6 @@
         }
         .contact-form textarea {
             border-radius: 28px;
-            resize: vertical;
         }
         .btn-submit {
             background: #7c3a6e;
@@ -560,7 +649,6 @@
         }
         .btn-submit:hover {
             background: #a15883;
-            transform: scale(0.98);
         }
 
         footer {
@@ -588,7 +676,6 @@
             to { opacity: 1; transform: translateY(0);}
         }
 
-        /* Responsive */
         @media (max-width: 980px) {
             .nav-menu {
                 position: fixed;
@@ -669,35 +756,34 @@
 </header>
 
 <main>
-    <!-- Hero Section -->
     <section id="home" class="hero">
         <div class="hero-overlay">
             <div class="hero-content">
-                <h1>Fé que floresce <br>como videira frutífera</h1>
-                <p>Seja bem-vindo à Igreja Videira de Jataí</p>
+                <h1>CULTO ONLINE <br> </h1>
+                    <h2>Perdeu a palavra da semana? </h2>
+                <p><a href="https://youtube.com/@videirajatai/streams" target="_blank">Assista ao culto mais recente no YouTube</a></p>
                 <div class="btn-group">
-                    <a href="#horarios" class="btn-primary">Nossos Cultos</a>
-                    <a href="https://instagram.com/videirajatai" target="_blank" class="btn-outline-light"><i class="fab fa-instagram"></i> Acompanhe</a>
+                    <a href="#horarios" class="btn-primary">Agenda Semanal</a>
+                    <a href="https://instagram.com/videirajatai" target="_blank" class="btn-outline-light"><i class="fab fa-instagram"></i> Siga-nos </a>
                     <a href="https://www.videirajatai.com.br/encontrocomdeus" target="_blank" class="btn-primary btn-encontro"><i class="fas fa-heart"></i> Encontro com Deus</a>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Sobre + Pastor -->
     <section id="sobre">
         <div class="container">
             <h2 class="section-title reveal">Sobre a Videira</h2>
-            <div class="section-sub reveal">Uma igreja que acolhe, transforma e espalha o amor de Cristo.</div>
+            <div class="section-sub reveal">Uma igreja que acolhe, e espalha o amor de Cristo.</div>
             <div class="pastor-card reveal">
                 <div class="pastor-img">
                     <i class="fas fa-church"></i>
                 </div>
                 <div class="pastor-info">
                     <h3>NOSSA VISÃO</h3>
-                    <p>Nosso encargo é edificar uma igreja de vencedores, onde cada membro é um ministro, cada casa uma extenção da igreja. Alcançando assim, nossa geração pra Cristo através das células que se multiplicam.</p>
+                    <p>Nosso encargo é edificar uma igreja de vencedores, onde cada membro é um ministro, cada casa uma extensão da igreja. Alcançando assim, nossa geração pra Cristo através das células que se multiplicam.</p>
                     <div class="versiculo">
-                        <i class="fas fa-quote-left"></i> "Eu sou a videira verdadeira, e meu Pai é o agricultor. Todo ramo que, estando em mim, não dá fruto, ele corta; e todo que dá fruto ele poda, para que dê mais fruto ainda." — João 15:1-2
+                        <i class="fas fa-quote-left"></i> "E, perseverando unânimes todos os dias no templo, e partindo o pão em casa, comiam juntos com alegria e singeleza de coração, Louvando a Deus, e caindo na graça de todo o povo. E todos os dias acrescentava o Senhor à igreja aqueles que se haviam de salvar. - Atos 2:46,47"
                     </div>
                 </div>
             </div>
@@ -705,12 +791,12 @@
                 <div class="info-card reveal">
                     <i class="fas fa-heart"></i>
                     <h3>Missão</h3>
-                    <p>Proclamar o evangelho, discipular e servir a comunidade com amor e integridade.</p>
+                    <p>Ganhar. Consolidar. Discipular. Treinar. Enviar.</p>
                 </div>
                 <div class="info-card reveal">
                     <i class="fas fa-eye"></i>
                     <h3>Visão</h3>
-                    <p>Ser referência em Jataí como igreja relevante, acolhedora e vibrante na fé.</p>
+                    <p>Edificar uma Igreja de Vencedores, onde cada membro é ministro da Graça de Jesus.</p>
                 </div>
                 <div class="info-card reveal">
                     <i class="fas fa-hands-helping"></i>
@@ -721,24 +807,36 @@
         </div>
     </section>
 
-    <!-- Horários -->
+    <!-- SEÇÃO HORÁRIOS + CÉLULAS (com cards de destaque e cards de células) -->
     <section id="horarios" style="background: linear-gradient(145deg, #fdf7ef, #fffcf5);">
         <div class="container">
             <h2 class="section-title reveal">Programação Semanal</h2>
-            <div class="section-sub reveal">Venha adorar conosco. Todos são bem-vindos!</div>
-            <div class="horarios-wrapper reveal">
-                <div class="horario-item"><i class="fas fa-calendar-alt"></i> <h3>Todo Domingo</h3> <strong>Culto da Família</strong><br>18h</div>
-                <!--<div class="horario-item"><i class="fas fa-calendar-week"></i> <h3>Quarta-feira</h3> <strong>Escola Bíblica & Oração</strong><br>19h30</div>
-                <div class="horario-item"><i class="fas fa-users"></i> <h3>Sábado</h3> <strong>Jovens e Adolescentes</strong><br>18h</div>
-                <div class="horario-item"><i class="fas fa-praying-hands"></i> <h3>Oração</h3> <strong>Manhã de Intercessão</strong><br>Quinta 9h</div>-->
+            <div class="section-sub reveal">CULTOS E CÉLULAS</div>
+            <div class="horarios-wrapper" id="horariosWrapper">
+                <!-- Card destaque 1: Culto de Celebração -->
+                <div class="card-destaque">
+                    <div class="destaque-conteudo">
+                        <div class="destaque-titulo">Culto de Celebração</div>
+                        <div class="destaque-dia"><i class="fas fa-calendar-alt"></i> Todo Domingo – 18h</div>
+                        <div class="destaque-endereco"><i class="fas fa-map-marker-alt"></i> Av. Veriano de Oliveira Lima, 1067 - Santa Maria, Jataí - GO</div>
+                    </div>
+                </div>
+                <!-- Card destaque 2: Culto KIDS -->
+                <div class="card-destaque">
+                    <div class="destaque-conteudo">
+                        <div class="destaque-titulo">Culto KIDS</div>
+                        <div class="destaque-dia"><i class="fas fa-calendar-alt"></i> Todo Domingo – 18h</div>
+                        <div class="destaque-endereco"><i class="fas fa-map-marker-alt"></i> Av. Veriano de Oliveira Lima, 1067 - Santa Maria, Jataí - GO</div>
+                    </div>
+                </div>
+                <!-- Os cards das células serão inseridos aqui dinamicamente -->
             </div>
             <div class="reveal" style="text-align: center; margin-top: 2rem;">
-                <p><i class="fas fa-map-marker-alt"></i> Av. Veriano de Oliveira Lima, 1067 - Santa Maria, Jataí - GO</p>
+               <!--<p><i class="fas fa-map-marker-alt"></i> Av. Veriano de Oliveira Lima, 1067 - Santa Maria, Jataí - GO</p>-->
             </div>
         </div>
     </section>
 
-    <!-- SEÇÃO OFERTAS (PIX + QR Code) -->
     <section id="ofertas">
         <div class="container">
             <h2 class="section-title reveal">Contribua com alegria</h2>
@@ -763,7 +861,6 @@
         </div>
     </section>
 
-    <!-- ENCONTRO COM DEUS - DESTAQUE ESPECIAL -->
     <div class="container reveal">
         <div class="encontro-destaque">
             <h2><i class="fas fa-hands-praying"></i> Encontro com Deus</h2>
@@ -773,7 +870,6 @@
         </div>
     </div>
 
-    <!-- Contato + Mapa + Instagram -->
     <section id="contato">
         <div class="container">
             <h2 class="section-title reveal">Entre em contato</h2>
@@ -785,12 +881,12 @@
                     <p><i class="fas fa-phone-alt"></i> (62) 99623-1730 (WhatsApp)</p>
                     <p><i class="fas fa-envelope"></i> videirajatai01@gmail.com</p>
                     <div class="social-links">
-                        <a href="https://instagram.com/videirajatai" target="_blank" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
-                        <a href="#" target="_blank" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
-                        <a href="https://www.youtube.com/@videirajatai" target="_blank" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
+                        <a href="https://instagram.com/videirajatai" target="_blank"><i class="fab fa-instagram"></i></a>
+                        <a href="#" target="_blank"><i class="fab fa-facebook-f"></i></a>
+                        <a href="https://www.youtube.com/@videirajatai" target="_blank"><i class="fab fa-youtube"></i></a>
                     </div>
                     <div style="margin-top: 1.5rem;">
-                        <a href="https://www.google.com/maps/search/?api=1&query=Av.+Veriano+de+Oliveira+Lima,+1067,+Jataí" target="_blank" class="btn-primary" style="background: #7c3a6e; color:white; display:inline-block; margin-top: 10px;"><i class="fas fa-directions"></i> Abrir no mapa</a>
+                        <a href="https://www.google.com/maps/search/?api=1&query=Av.+Veriano+de+Oliveira+Lima,+1067,+Jataí" target="_blank" class="btn-primary" style="background: #7c3a6e; color:white; display:inline-block;"><i class="fas fa-directions"></i> Abrir no mapa</a>
                     </div>
                 </div>
                 <div class="contact-form reveal">
@@ -801,7 +897,7 @@
                         <textarea rows="4" placeholder="Mensagem ou pedido de oração" id="msg"></textarea>
                         <button type="submit" class="btn-submit"><i class="fas fa-paper-plane"></i> Enviar mensagem</button>
                     </form>
-                    <p style="font-size: 0.8rem; margin-top: 12px; color:#987b60;">*Em breve nossa equipe retornará com muito amor.</p>
+                    <p style="font-size: 0.8rem; margin-top: 12px;">*Em breve nossa equipe retornará com muito amor.</p>
                 </div>
             </div>
         </div>
@@ -817,88 +913,191 @@
         <a href="#contato">Contato</a>
         <a href="https://videirajatai.com.br/sistema" target="_blank"><i class="fas fa-user-lock"></i> Área do Membro</a>
     </div>
-    <p>© 2025 Igreja Videira de Jataí | Pastor Germerson Araujo | Todos os direitos reservados.</p>
-    <p style="margin-top: 8px; font-size: 0.85rem;">Siga-nos no Instagram <strong>@videirajatai</strong> | Av. Veriano de Oliveira Lima, 1067</p>
+    <p>© 2026 Igreja Videira de Jataí | Pastor Germerson Araujo | Todos os direitos reservados.</p>
+    <p style="margin-top: 8px;">Siga-nos no Instagram <strong>@videirajatai</strong> | Av. Veriano de Oliveira Lima, 1067</p>
 </footer>
 
 <script>
+    // NÚMERO DO PASTOR GERMERSON (WhatsApp)
+    const PASTOR_WPP_NUMBER = "5562996231730";
+
+    // URL da API do Google Script (já configurada)
+    const API_URL = "https://script.google.com/macros/s/AKfycbxnystn3UqAKnfLUgw7tXS8CzrnpxTS0iax80rhMCRs-T47ibodGYvbRw2KRrtsnCzn/exec";
+
+    // Função auxiliar: extrair apenas o dia da semana
+    function extrairDia(texto) {
+        if (!texto) return "Dia a definir";
+        const dias = ["Domingo", "Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado"];
+        for (let dia of dias) if (texto.includes(dia)) return dia;
+        const match = texto.match(/(Terça|Quarta|Quinta|Sexta|Sábado|Domingo|Segunda)/i);
+        return match ? match[0] : texto.split(" ")[0];
+    }
+
+    // Extrair setor/bairro (prioriza nome da célula, depois final do endereço)
+    function extrairSetor(celula) {
+        if (celula.bairro && celula.bairro !== "Setor" && !celula.bairro.includes("Rua")) return celula.bairro;
+        if (celula.nome_celula && celula.nome_celula.includes(" - ")) return celula.nome_celula.split(" - ")[0].trim();
+        if (celula.endereco && celula.endereco.includes(" - ")) {
+            let parte = celula.endereco.split(" - ").pop().trim();
+            if (parte && parte.length > 2) return parte;
+        }
+        if (celula.endereco) {
+            let primeira = celula.endereco.split(",")[0].trim();
+            let palavrasIgnorar = ["Rua", "Av", "Avenida", "Alameda", "Travessa"];
+            let partesPrimeira = primeira.split(" ");
+            if (partesPrimeira.length > 1 && palavrasIgnorar.includes(partesPrimeira[0])) {
+                return partesPrimeira.slice(1).join(" ");
+            }
+            return primeira;
+        }
+        return "Setor";
+    }
+
+    async function carregarCelulas() {
+        const wrapper = document.getElementById("horariosWrapper");
+        if (!wrapper) return;
+
+        // Remove apenas os cards de células antigos (mantém os dois cards de destaque)
+        const existingCells = wrapper.querySelectorAll('.horario-item-celula');
+        existingCells.forEach(cell => cell.remove());
+        const loadingDiv = document.getElementById("loadingCellsMsg");
+        if (loadingDiv) loadingDiv.remove();
+
+        const loading = document.createElement("div");
+        loading.className = "loading-celulas";
+        loading.id = "loadingCellsMsg";
+        loading.innerHTML = '<i class="fas fa-spinner fa-pulse"></i> Carregando células...';
+        wrapper.appendChild(loading);
+
+        try {
+            const response = await fetch(API_URL, { method: "GET", mode: "cors", cache: "no-store" });
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
+            let dados = await response.json();
+            if (dados && dados.dados && Array.isArray(dados.dados)) dados = dados.dados;
+            if (!Array.isArray(dados)) dados = [];
+
+            document.getElementById("loadingCellsMsg")?.remove();
+
+            if (dados.length > 0) {
+                dados.forEach(celula => {
+                    const diaRaw = celula.dia || celula.dia_horaio || celula.dia_horario || "";
+                    const dia = extrairDia(diaRaw);
+                    const setor = extrairSetor(celula);
+                    let lider = celula.lider || celula.lider_nome || "Irmão(ã)";
+                    if (lider.includes("@")) lider = "Irmão(ã)";
+                    const endereco = celula.endereco || "Endereço não informado";
+
+                    const card = document.createElement("div");
+                    card.className = "horario-item-celula";
+
+                    card.innerHTML = `
+                        <div class="card-dia">${dia}</div>
+                        <div class="card-setor"><i class="fas fa-map-pin"></i> ${setor}</div>
+                        <div class="card-lider"><i class="fas fa-user"></i> ${lider}</div>
+                        <div class="card-endereco"><i class="fas fa-location-dot"></i> <span>${endereco}</span></div>
+                        <a href="https://wa.me/${PASTOR_WPP_NUMBER}?text=Olá%20Pastor,%20gostaria%20de%20saber%20mais%20sobre%20a%20célula%20de%20${encodeURIComponent(dia)}%20no%20setor%20${encodeURIComponent(setor)}" target="_blank" class="btn-whatsapp-icon-celula"><i class="fab fa-whatsapp"></i></a>
+                    `;
+                    wrapper.appendChild(card);
+                });
+            } else {
+                const sem = document.createElement("div");
+                sem.className = "horario-item-celula";
+                sem.style.width = "100%";
+                sem.innerHTML = `<i class="fas fa-info-circle"></i><h3>Em breve</h3><p>Estamos organizando nossas células.</p>`;
+                wrapper.appendChild(sem);
+            }
+        } catch (error) {
+            console.error("Erro ao carregar células:", error);
+            document.getElementById("loadingCellsMsg")?.remove();
+            const erroCard = document.createElement("div");
+            erroCard.className = "horario-item-celula";
+            erroCard.style.width = "100%";
+            erroCard.innerHTML = `<i class="fas fa-exclamation-triangle"></i><h3>Ops!</h3><p>Não foi possível carregar as células.</p>`;
+            wrapper.appendChild(erroCard);
+        }
+    }
+
     // Mobile menu toggle
     const mobileIcon = document.getElementById('mobileMenuIcon');
     const navMenu = document.getElementById('navMenu');
-    mobileIcon.addEventListener('click', () => {
-        navMenu.classList.toggle('active');
-        const icon = mobileIcon.querySelector('i');
-        if(navMenu.classList.contains('active')) {
-            icon.classList.remove('fa-bars');
-            icon.classList.add('fa-times');
-        } else {
-            icon.classList.remove('fa-times');
-            icon.classList.add('fa-bars');
-        }
-    });
-
+    if (mobileIcon) {
+        mobileIcon.addEventListener('click', () => {
+            navMenu.classList.toggle('active');
+            const icon = mobileIcon.querySelector('i');
+            if (navMenu.classList.contains('active')) {
+                icon.classList.remove('fa-bars');
+                icon.classList.add('fa-times');
+            } else {
+                icon.classList.remove('fa-times');
+                icon.classList.add('fa-bars');
+            }
+        });
+    }
     document.querySelectorAll('.nav-menu a').forEach(link => {
         link.addEventListener('click', () => {
-            if(window.innerWidth <= 980) {
+            if (window.innerWidth <= 980) {
                 navMenu.classList.remove('active');
-                mobileIcon.querySelector('i').classList.remove('fa-times');
-                mobileIcon.querySelector('i').classList.add('fa-bars');
+                const icon = mobileIcon?.querySelector('i');
+                if (icon) {
+                    icon.classList.remove('fa-times');
+                    icon.classList.add('fa-bars');
+                }
             }
         });
     });
 
-    // Scroll effect header
+    // Scroll header
     const header = document.getElementById('header');
     window.addEventListener('scroll', () => {
-        if(window.scrollY > 20) {
-            header.classList.add('scrolled');
-        } else {
-            header.classList.remove('scrolled');
-        }
+        if (window.scrollY > 20) header.classList.add('scrolled');
+        else header.classList.remove('scrolled');
     });
 
-    // Reveal animation observer
+    // Reveal observer
     const revealElements = document.querySelectorAll('.reveal');
     const observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
-            if(entry.isIntersecting) {
+            if (entry.isIntersecting) {
                 entry.target.classList.add('visible');
                 observer.unobserve(entry.target);
             }
         });
-    }, { threshold: 0.15, rootMargin: "0px 0px -20px 0px" });
+    }, { threshold: 0.15 });
     revealElements.forEach(el => observer.observe(el));
 
-    // Form submit
+    // Form contato
     const form = document.getElementById('contactForm');
-    form.addEventListener('submit', (e) => {
-        e.preventDefault();
-        alert(`🙏 Obrigado, ${document.getElementById('nome').value || 'visitante'}! Sua mensagem foi enviada. Deus abençoe!`);
-        form.reset();
-    });
+    if (form) {
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+            alert(`🙏 Obrigado, ${document.getElementById('nome').value || 'visitante'}! Sua mensagem foi enviada. Deus abençoe!`);
+            form.reset();
+        });
+    }
 
     // Smooth scroll
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         anchor.addEventListener('click', function(e) {
             const targetId = this.getAttribute('href');
-            if(targetId === "#" || targetId === "") return;
+            if (targetId === "#" || targetId === "") return;
             const targetElement = document.querySelector(targetId);
-            if(targetElement) {
+            if (targetElement) {
                 e.preventDefault();
                 targetElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
             }
         });
     });
 
-    // Função copiar chave PIX
+    // Copiar chave PIX
     window.copiarChave = function() {
         const chave = document.getElementById('pixChave').innerText;
-        navigator.clipboard.writeText(chave).then(() => {
-            alert('Chave PIX copiada: ' + chave);
-        }).catch(() => {
-            alert('Copie manualmente: ' + chave);
-        });
+        navigator.clipboard.writeText(chave).then(() => alert('Chave PIX copiada: ' + chave))
+            .catch(() => alert('Copie manualmente: ' + chave));
     };
+
+    document.addEventListener("DOMContentLoaded", () => {
+        carregarCelulas();
+    });
 </script>
 </body>
 </html>
