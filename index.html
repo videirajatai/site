@@ -1157,7 +1157,9 @@
                     <h1>Perdeu a palavra<br>da semana?</h1>
                     <p>Se você não pôde estar conosco, assista ao nosso último culto e seja edificado.</p>
                     <div class="btn-group">
-                        <a href="https://youtube.com/@videirajatai/streams" target="_blank" class="btn-primary"><i class="fab fa-youtube"></i> Assista Agora</a>
+                        <a id="btnAssistir" href="https://youtube.com/@videirajatai/streams" target="_blank" class="btn-primary">
+                            <i class="fab fa-youtube"></i> Assista Agora
+                        </a>
                         <a href="#horarios" class="btn-outline">Nossa Agenda</a>
                     </div>
                 </div>
@@ -1530,7 +1532,30 @@
             }
         }
 
-        document.addEventListener("DOMContentLoaded", carregarCelulas);
+       // NOVO: também atualiza o link da última palavra
+const API_PALAVRA_URL = API_URL + "?tipo=palavra"; // usa a mesma URL base das células
+
+async function atualizarLinkPalavra() {
+    const btn = document.getElementById('btnAssistir');
+    if (!btn) return;
+
+    try {
+        const response = await fetch(API_PALAVRA_URL, { cache: "no-store" });
+        const data = await response.json();
+        if (data.link && data.link.trim() !== '') {
+            btn.href = data.link;
+            // opcional: muda o texto do botão para "Última Palavra"
+            btn.innerHTML = '<i class="fab fa-youtube"></i> Última Palavra';
+        }
+    } catch (erro) {
+        console.warn('Link da palavra não atualizado, mantendo padrão.');
+    }
+}
+
+document.addEventListener("DOMContentLoaded", function() {
+    carregarCelulas();
+    atualizarLinkPalavra();
+});
     </script>
 </body>
 </html>
