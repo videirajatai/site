@@ -400,7 +400,7 @@
                     const urlYoutube = item.link || item.youtube || item.video || '';
                     let btnYoutube = '';
                     if (urlYoutube && urlYoutube.trim() !== '') {
-                        btnYoutube = `<a href="${urlYoutube}" target="_blank" class="btn-youtube-card">▶ YouTube</a>`;
+                        btnYoutube = `<a href="${urlYoutube}" target="_blank" class="btn-youtube-card">▶ Assistir no YouTube</a>`;
                     }
         
                     return `
@@ -410,8 +410,8 @@
                             <div class="card-resumo">${resumo}</div>
                             
                             <div class="card-actions">
-                                <button class="btn-ler-mais" data-index="${index}">📖 Ler mais</button>
-                                <button class="btn-pdf-card" data-index="${index}">📄 PDF</button>
+                                <button class="btn-ler-mais" data-index="${index}">📖 Abrir Palavra</button>
+                                <button class="btn-pdf-card" data-index="${index}">📄 Baixar PDF</button>
                                 ${btnYoutube}
                             </div>
                         </div>
