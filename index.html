@@ -1516,7 +1516,7 @@
                 grid.innerHTML = '';
 
                 if (dados.length > 0) {
-                    dados.forEach(celula => {
+                    dados.forEach(old_celula => {
                         const diaRaw = celula.dia || celula.dia_horaio || celula.dia_horario || "";
                         const dia = extrairDia(diaRaw);
                         const setor = extrairSetor(celula);
