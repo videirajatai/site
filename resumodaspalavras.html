@@ -47,17 +47,22 @@
       letter-spacing: 0.5px;
       margin-bottom: 6px;
     }
-    .card-titulo {
+    .card-tema {
       font-size: 20px;
       font-weight: 700;
       color: #1e293b;
-      margin-bottom: 4px;
+      margin-bottom: 6px;
     }
-    .card-preletor {
-      font-size: 16px;
+    .card-texto {
+      font-size: 15px;
       color: #475569;
       margin-bottom: 12px;
-      font-style: italic;
+      line-height: 1.5;
+      /* opcional: limite de linhas */
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
     }
     .card-link {
       display: inline-block;
@@ -97,7 +102,7 @@
     }
     @media (max-width: 500px) {
       .card { padding: 15px; }
-      .card-titulo { font-size: 18px; }
+      .card-tema { font-size: 18px; }
     }
   </style>
 </head>
@@ -111,7 +116,7 @@
 
   <script>
     // Substitua pela URL real do seu Apps Script implantado
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxnystn3UqAKnfLUgw7tXS8CzrnpxTS0iax80rhMCRs-T47ibodGYvbRw2KRrtsnCzn/exec';
+    const SCRIPT_URL = 'https://script.google.com/macros/s/SEU_ID_AQUI/exec';
 
     async function carregarPalavras() {
       const container = document.getElementById('lista-container');
@@ -130,19 +135,18 @@
           return;
         }
 
-        // Monta os cards
         let html = '';
         dados.forEach(item => {
-          const dataFormatada = item.data || 'Data não informada';
-          const titulo = item.titulo || 'Sem título';
-          const preletor = item.preletor ? `👤 ${item.preletor}` : '';
+          const data = item.data || 'Data não informada';
+          const tema = item.tema || 'Sem tema';
+          const texto = item.texto || '';
           const link = item.link && item.link.startsWith('http') ? item.link : '#';
 
           html += `
             <div class="card">
-              <div class="card-data">${dataFormatada}</div>
-              <div class="card-titulo">${titulo}</div>
-              ${preletor ? `<div class="card-preletor">${preletor}</div>` : ''}
+              <div class="card-data">${data}</div>
+              <div class="card-tema">${tema}</div>
+              ${texto ? `<div class="card-texto">${texto}</div>` : ''}
               ${link !== '#' ? `<a href="${link}" target="_blank" class="card-link">▶ Assistir</a>` : ''}
             </div>
           `;
@@ -155,7 +159,6 @@
       }
     }
 
-    // Executa ao carregar a página
     document.addEventListener('DOMContentLoaded', carregarPalavras);
   </script>
 </body>
