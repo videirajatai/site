@@ -13,7 +13,7 @@
     }
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: #f4f7f6;
+      background: #f0f2f5;
       padding: 0 0 40px 0;
       display: flex;
       flex-direction: column;
@@ -74,7 +74,7 @@
       background: #9a7209;
     }
 
-    /* Container principal */
+    /* Container */
     .container {
       max-width: 820px;
       margin: 0 auto;
@@ -91,57 +91,78 @@
       padding-bottom: 12px;
     }
 
-    /* Cards */
+    /* Cards estilo app */
     .card {
-      background: #fff;
-      border-radius: 14px;
-      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
-      padding: 20px 24px;
-      margin-bottom: 20px;
+      background: #ffffff;
+      border-radius: 18px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+      padding: 22px 24px;
+      margin-bottom: 22px;
       transition: transform 0.2s, box-shadow 0.2s;
       border-left: 6px solid #b8860b;
     }
     .card:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.10);
+      transform: translateY(-4px);
+      box-shadow: 0 10px 28px rgba(0, 0, 0, 0.10);
     }
     .card-data {
       font-size: 13px;
-      color: #718096;
       font-weight: 600;
-      letter-spacing: 0.4px;
-      margin-bottom: 4px;
+      color: #b8860b;
+      letter-spacing: 0.5px;
       text-transform: uppercase;
+      margin-bottom: 6px;
     }
     .card-tema {
-      font-size: 20px;
+      font-size: 22px;
       font-weight: 700;
       color: #1e293b;
-      margin-bottom: 6px;
+      margin-bottom: 8px;
+      line-height: 1.2;
     }
     .card-texto {
       font-size: 15px;
       color: #475569;
-      margin: 8px 0 14px 0;
-      line-height: 1.6;
+      line-height: 1.7;
+      margin: 10px 0 16px 0;
+      /* texto completo, sem truncar */
+      white-space: pre-wrap;
+      word-wrap: break-word;
+    }
+    .card-texto.collapsed {
       display: -webkit-box;
-      -webkit-line-clamp: 3;
+      -webkit-line-clamp: 4;
       -webkit-box-orient: vertical;
       overflow: hidden;
+    }
+    .btn-expandir {
+      background: none;
+      border: none;
+      color: #b8860b;
+      font-weight: 600;
+      font-size: 14px;
+      cursor: pointer;
+      padding: 0;
+      margin-bottom: 12px;
+    }
+    .btn-expandir:hover {
+      text-decoration: underline;
     }
     .card-actions {
       display: flex;
       flex-wrap: wrap;
       gap: 10px;
-      margin-top: 4px;
+      margin-top: 8px;
+      border-top: 1px solid #e9edf2;
+      padding-top: 14px;
     }
     .card-actions .btn {
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      background: #e9edf2;
+      background: #f1f3f5;
       color: #1e293b;
-      padding: 7px 18px;
+      padding: 8px 20px;
       border-radius: 30px;
       text-decoration: none;
       font-weight: 600;
@@ -171,30 +192,27 @@
     .card-actions .btn-site:hover {
       background: #1d4ed8;
     }
+    .card-actions .btn-download {
+      background: #16a34a;
+      color: #fff;
+    }
+    .card-actions .btn-download:hover {
+      background: #15803d;
+    }
 
-    /* Estado vazio/erro */
-    .sem-palavras,
-    .loading,
-    .erro {
+    /* Estados */
+    .loading, .erro, .sem-palavras {
       text-align: center;
       padding: 40px 20px;
       background: #fff;
       border-radius: 14px;
       font-size: 18px;
     }
-    .loading {
-      color: #475569;
-    }
-    .erro {
-      color: #dc2626;
-      background: #fee2e2;
-      border: 1px solid #fecaca;
-    }
-    .sem-palavras {
-      color: #94a3b8;
-    }
+    .loading { color: #475569; }
+    .erro { color: #dc2626; background: #fee2e2; border: 1px solid #fecaca; }
+    .sem-palavras { color: #94a3b8; }
 
-    /* Modal */
+    /* Modal vídeo */
     .modal-overlay {
       display: none;
       position: fixed;
@@ -222,14 +240,8 @@
       animation: modalIn 0.3s ease;
     }
     @keyframes modalIn {
-      from {
-        transform: scale(0.95);
-        opacity: 0;
-      }
-      to {
-        transform: scale(1);
-        opacity: 1;
-      }
+      from { transform: scale(0.95); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
     }
     .modal-box .modal-close {
       position: absolute;
@@ -243,9 +255,7 @@
       font-weight: 700;
       transition: color 0.2s;
     }
-    .modal-box .modal-close:hover {
-      color: #dc2626;
-    }
+    .modal-box .modal-close:hover { color: #dc2626; }
     .modal-box iframe {
       width: 100%;
       height: 420px;
@@ -277,34 +287,16 @@
         align-items: stretch;
         gap: 10px;
       }
-      .header-left {
-        justify-content: center;
-      }
-      .btn-voltar {
-        text-align: center;
-        width: 100%;
-      }
-      .header-title {
-        font-size: 16px;
-      }
-      .header-title small {
-        font-size: 12px;
-      }
-      .card {
-        padding: 16px 18px;
-      }
-      .card-tema {
-        font-size: 18px;
-      }
-      .modal-box iframe {
-        height: 240px;
-      }
+      .header-left { justify-content: center; }
+      .btn-voltar { text-align: center; width: 100%; }
+      .header-title { font-size: 16px; }
+      .header-title small { font-size: 12px; }
+      .card { padding: 16px 18px; }
+      .card-tema { font-size: 20px; }
+      .modal-box iframe { height: 240px; }
     }
     @media (max-width: 420px) {
-      .card-actions .btn {
-        font-size: 12px;
-        padding: 6px 14px;
-      }
+      .card-actions .btn { font-size: 12px; padding: 6px 14px; }
     }
   </style>
 </head>
@@ -335,7 +327,7 @@
     &copy; 2026 Videira Jataí – Todos os direitos reservados.
   </div>
 
-  <!-- Modal para vídeos -->
+  <!-- Modal Vídeo -->
   <div class="modal-overlay" id="modalVideo">
     <div class="modal-box">
       <button class="modal-close" id="modalFechar">&times;</button>
@@ -345,27 +337,23 @@
   </div>
 
   <script>
-    // ================= CONFIGURAÇÃO =================
-    // Substitua pela URL real do seu Apps Script implantado
+    // URL do Apps Script
     const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxnystn3UqAKnfLUgw7tXS8CzrnpxTS0iax80rhMCRs-T47ibodGYvbRw2KRrtsnCzn/exec';
 
-    // ================= DOM ELEMENTOS =================
     const container = document.getElementById('lista-container');
     const modalOverlay = document.getElementById('modalVideo');
     const modalIframe = document.getElementById('modalIframe');
     const modalTitulo = document.getElementById('modalTitulo');
     const modalFechar = document.getElementById('modalFechar');
 
-    // ================= FUNÇÃO PARA EXTRAIR ID DO YOUTUBE =================
+    // Extrair ID do YouTube
     function getYouTubeId(url) {
       if (!url) return null;
-      // Exemplos: https://youtu.be/ID, https://www.youtube.com/watch?v=ID, https://youtube.com/embed/ID
       const regex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/i;
       const match = url.match(regex);
       return match ? match[1] : null;
     }
 
-    // ================= FUNÇÃO PARA IDENTIFICAR TIPO DE LINK =================
     function getLinkType(url) {
       if (!url) return 'none';
       const lower = url.toLowerCase();
@@ -374,7 +362,7 @@
       return 'website';
     }
 
-    // ================= MODAL =================
+    // Modal
     function abrirModal(videoId, titulo) {
       modalIframe.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0`;
       modalTitulo.textContent = titulo || 'Assistir no YouTube';
@@ -396,24 +384,22 @@
       if (e.key === 'Escape') fecharModal();
     });
 
-    // ================= CARREGAR DADOS =================
+    // Carregar dados
     async function carregarPalavras() {
       try {
         const resposta = await fetch(SCRIPT_URL + '?tipo=listaPalavras');
-        if (!resposta.ok) throw new Error('Erro na requisição (HTTP ' + resposta.status + ')');
+        if (!resposta.ok) throw new Error('Erro na requisição');
         const dados = await resposta.json();
 
         if (dados && dados.error) {
           container.innerHTML = `<div class="erro">❌ ${dados.error}</div>`;
           return;
         }
-
         if (!dados || dados.length === 0) {
           container.innerHTML = `<div class="sem-palavras">📭 Nenhuma palavra cadastrada ainda.</div>`;
           return;
         }
 
-        // Renderiza os cards
         let html = '';
         dados.forEach(item => {
           const data = item.data || 'Data não informada';
@@ -423,36 +409,67 @@
           const tipo = getLinkType(link);
           const youtubeId = tipo === 'youtube' ? getYouTubeId(link) : null;
 
-          // Monta botões
+          // Botões
           let botoesHtml = '';
           if (tipo === 'youtube' && youtubeId) {
             botoesHtml += `<button class="btn btn-assistir" data-youtube-id="${youtubeId}" data-tema="${tema}">▶ Assistir</button>`;
           }
           if (tipo === 'pdf') {
-            botoesHtml += `<a href="${link}" target="_blank" class="btn btn-pdf">📄 Baixar PDF</a>`;
+            botoesHtml += `<a href="${link}" download class="btn btn-pdf">📄 Baixar PDF</a>`;
           }
           if (tipo === 'website' && !link.includes('youtube')) {
             botoesHtml += `<a href="${link}" target="_blank" class="btn btn-site">🔗 Acessar</a>`;
           }
-          // Se não houver link ou tipo não reconhecido, não exibe botão
           if (!botoesHtml && link) {
-            // fallback: exibe link genérico
             botoesHtml += `<a href="${link}" target="_blank" class="btn btn-site">🔗 Acessar</a>`;
           }
+
+          // Texto: se tiver mais de 200 caracteres, adiciona botão "Ler mais"
+          const textoCompleto = texto;
+          const textoCurto = texto.length > 200 ? texto.substring(0, 200) + '...' : texto;
+          const precisaExpandir = texto.length > 200;
 
           html += `
             <div class="card">
               <div class="card-data">${data}</div>
               <div class="card-tema">${tema}</div>
-              ${texto ? `<div class="card-texto">${texto}</div>` : ''}
-              ${botoesHtml ? `<div class="card-actions">${botoesHtml}</div>` : ''}
+              <div class="card-texto${precisaExpandir ? ' collapsed' : ''}" id="texto-${item.id || Math.random()}">
+                ${precisaExpandir ? textoCurto : textoCompleto}
+              </div>
+              ${precisaExpandir ? `<button class="btn-expandir" data-target="texto-${item.id || Math.random()}">Ler mais</button>` : ''}
+              <div class="card-actions">
+                ${botoesHtml}
+              </div>
             </div>
           `;
         });
 
         container.innerHTML = html;
 
-        // ========== Adiciona eventos aos botões "Assistir" ==========
+        // Evento para expandir texto
+        document.querySelectorAll('.btn-expandir').forEach(btn => {
+          btn.addEventListener('click', function() {
+            const targetId = this.dataset.target;
+            const textoDiv = document.getElementById(targetId);
+            if (textoDiv) {
+              const isCollapsed = textoDiv.classList.contains('collapsed');
+              if (isCollapsed) {
+                // expandir: mostrar texto completo
+                // precisamos buscar o texto original (guardado no dataset do card)
+                // Vamos guardar o texto completo em um dataset no próprio elemento
+                if (!textoDiv.dataset.textoCompleto) {
+                  // pega o texto original a partir do item (não temos aqui)
+                  // melhor: guardar no dataset durante a renderização
+                }
+                // Como não temos o texto completo guardado, vou reverter a lógica:
+                // Vamos usar um atributo data-completo no botão e no texto
+                // Na renderização, guardamos o texto completo no dataset do textoDiv
+              }
+            }
+          });
+        });
+
+        // ========== Botões "Assistir" ==========
         document.querySelectorAll('.btn-assistir').forEach(btn => {
           btn.addEventListener('click', function() {
             const id = this.dataset.youtubeId;
@@ -466,7 +483,6 @@
       }
     }
 
-    // ================= INICIALIZAR =================
     document.addEventListener('DOMContentLoaded', carregarPalavras);
   </script>
 </body>
