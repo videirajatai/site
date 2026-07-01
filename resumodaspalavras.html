@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Palavras - Videira Jataí</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #f4f7f6;
+      padding: 20px;
+    }
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    h1 {
+      color: #600018;
+      text-align: center;
+      margin-bottom: 30px;
+      font-size: 28px;
+      border-bottom: 3px solid #b8860b;
+      padding-bottom: 15px;
+    }
+    .card {
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      padding: 20px 25px;
+      margin-bottom: 20px;
+      transition: transform 0.2s;
+      border-left: 6px solid #b8860b;
+    }
+    .card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+    }
+    .card-data {
+      font-size: 14px;
+      color: #718096;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      margin-bottom: 6px;
+    }
+    .card-titulo {
+      font-size: 20px;
+      font-weight: 700;
+      color: #1e293b;
+      margin-bottom: 4px;
+    }
+    .card-preletor {
+      font-size: 16px;
+      color: #475569;
+      margin-bottom: 12px;
+      font-style: italic;
+    }
+    .card-link {
+      display: inline-block;
+      background: #b8860b;
+      color: #fff;
+      padding: 8px 20px;
+      border-radius: 30px;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 14px;
+      transition: background 0.2s;
+    }
+    .card-link:hover {
+      background: #9a7209;
+    }
+    .sem-palavras {
+      text-align: center;
+      color: #94a3b8;
+      font-size: 18px;
+      padding: 40px 20px;
+      background: #fff;
+      border-radius: 12px;
+    }
+    .loading {
+      text-align: center;
+      color: #475569;
+      font-size: 18px;
+      padding: 40px;
+    }
+    .erro {
+      text-align: center;
+      color: #dc2626;
+      background: #fee2e2;
+      padding: 20px;
+      border-radius: 8px;
+      border: 1px solid #fecaca;
+    }
+    @media (max-width: 500px) {
+      .card { padding: 15px; }
+      .card-titulo { font-size: 18px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>📖 Palavras da Videira</h1>
+    <div id="lista-container">
+      <div class="loading">Carregando...</div>
+    </div>
+  </div>
+
+  <script>
+    // Substitua pela URL real do seu Apps Script implantado
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxnystn3UqAKnfLUgw7tXS8CzrnpxTS0iax80rhMCRs-T47ibodGYvbRw2KRrtsnCzn/exec';
+
+    async function carregarPalavras() {
+      const container = document.getElementById('lista-container');
+      try {
+        const resposta = await fetch(SCRIPT_URL + '?tipo=listaPalavras');
+        if (!resposta.ok) throw new Error('Erro na requisição');
+        const dados = await resposta.json();
+
+        if (dados.error) {
+          container.innerHTML = `<div class="erro">❌ Erro: ${dados.error}</div>`;
+          return;
+        }
+
+        if (!dados || dados.length === 0) {
+          container.innerHTML = `<div class="sem-palavras">Nenhuma palavra cadastrada ainda.</div>`;
+          return;
+        }
+
+        // Monta os cards
+        let html = '';
+        dados.forEach(item => {
+          const dataFormatada = item.data || 'Data não informada';
+          const titulo = item.titulo || 'Sem título';
+          const preletor = item.preletor ? `👤 ${item.preletor}` : '';
+          const link = item.link && item.link.startsWith('http') ? item.link : '#';
+
+          html += `
+            <div class="card">
+              <div class="card-data">${dataFormatada}</div>
+              <div class="card-titulo">${titulo}</div>
+              ${preletor ? `<div class="card-preletor">${preletor}</div>` : ''}
+              ${link !== '#' ? `<a href="${link}" target="_blank" class="card-link">▶ Assistir</a>` : ''}
+            </div>
+          `;
+        });
+
+        container.innerHTML = html;
+
+      } catch (erro) {
+        container.innerHTML = `<div class="erro">❌ Erro ao carregar dados: ${erro.message}</div>`;
+      }
+    }
+
+    // Executa ao carregar a página
+    document.addEventListener('DOMContentLoaded', carregarPalavras);
+  </script>
+</body>
+</html>
