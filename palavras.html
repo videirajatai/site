@@ -305,7 +305,7 @@
         // ===================================================================
         // CARREGAR DADOS DA PLANILHA
         // ===================================================================
-        async function carregarPalavras() {
+       /* async function carregarPalavras() {
             try {
                 const resposta = await fetch(SCRIPT_URL + '?tipo=listaPalavras');
                 if (!resposta.ok) throw new Error('HTTP ' + resposta.status);
@@ -337,7 +337,7 @@
                     const urlYoutube = item.link || item.youtube || item.video || '';
                     let btnYoutube = '';
                     if (urlYoutube && urlYoutube.trim() !== '') {
-                        btnYoutube = `<a href="${urlYoutube}" target="_blank" class="btn-youtube-card">▶ YouTube</a>`;
+                        btnYoutube = `<a href="${urlYoutube}" target="_blank" class="btn-youtube-card">▶ Assistir no YouTube</a>`;
                     }
 
                     return `
@@ -357,6 +357,69 @@
 
                 container.innerHTML = htmlCards;
 
+            } catch (erro) {
+                container.innerHTML = `<div class="estado-box erro">❌ Erro ao carregar: ${erro.message}</div>`;
+            }
+        }*/
+
+        // ===================================================================
+        // CARREGAR DADOS DA PLANILHA (ATUALIZADA)
+        // ===================================================================
+        async function carregarPalavras() {
+            try {
+                const resposta = await fetch(SCRIPT_URL + '?tipo=listaPalavras');
+                if (!resposta.ok) throw new Error('HTTP ' + resposta.status);
+                
+                const dados = await resposta.json();
+        
+                if (dados && dados.error) {
+                    container.innerHTML = `<div class="estado-box erro">❌ ${dados.error}</div>`;
+                    return;
+                }
+        
+                if (!dados || dados.length === 0) {
+                    container.innerHTML = `<div class="estado-box sem-palavras">📭 Nenhuma palavra cadastrada ainda.</div>`;
+                    return;
+                }
+        
+                // Aplica a normalização da data em toda a lista antes de salvar e renderizar
+                palavrasSalvas = dados.map(item => {
+                    item.data = formatarDataBR(item.data);
+                    return item;
+                });
+        
+                // Monta os cards dinamicamente
+                const htmlCards = palavrasSalvas.map((item, index) => {
+                    const data = item.data; // Já normalizada em dd/mm/aaaa
+                    const tema = item.tema || 'Sem tema';
+                    const textoCompleto = item.texto || '';
+                    
+                    let resumo = textoCompleto.substring(0, 200);
+                    if (textoCompleto.length > 200) resumo += '...';
+        
+                    const urlYoutube = item.link || item.youtube || item.video || '';
+                    let btnYoutube = '';
+                    if (urlYoutube && urlYoutube.trim() !== '') {
+                        btnYoutube = `<a href="${urlYoutube}" target="_blank" class="btn-youtube-card">▶ YouTube</a>`;
+                    }
+        
+                    return `
+                        <div class="card">
+                            <div class="card-data">${data}</div>
+                            <div class="card-tema">${tema}</div>
+                            <div class="card-resumo">${resumo}</div>
+                            
+                            <div class="card-actions">
+                                <button class="btn-ler-mais" data-index="${index}">📖 Ler mais</button>
+                                <button class="btn-pdf-card" data-index="${index}">📄 PDF</button>
+                                ${btnYoutube}
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+        
+                container.innerHTML = htmlCards;
+        
             } catch (erro) {
                 container.innerHTML = `<div class="estado-box erro">❌ Erro ao carregar: ${erro.message}</div>`;
             }
@@ -384,6 +447,39 @@
 
         // Inicia o sistema
         document.addEventListener('DOMContentLoaded', carregarPalavras);
+
+        // ===================================================================
+        // FUNÇÃO PARA NORMALIZAR A DATA PARA dd/mm/aaaa
+        // ===================================================================
+        function formatarDataBR(strData) {
+            if (!strData || strData.trim() === "") return 'Data não informada';
+            
+            strData = strData.trim();
+        
+            // 1. Se já estiver no formato correto dd/mm/aaaa, apenas retorna
+            if (/^\d{2}\/\d{2}\/\d{4}$/.test(strData)) {
+                return strData;
+            }
+        
+            // 2. Se estiver no formato americano aaaa-mm-dd (comum em bancos de dados)
+            if (/^\d{4}-\d{2}-\d{2}/.test(strData)) {
+                // Remove possíveis resíduos de hora (T00:00:00 ou espaço)
+                const apenasData = strData.split(' ')[0].split('T')[0];
+                const partes = apenasData.split('-');
+                return `${partes[2]}/${partes[1]}/${partes[0]}`;
+            }
+        
+            // 3. Tentativa genérica caso o Google envie como objeto de data por extenso
+            const dataObj = new Date(strData);
+            if (!isNaN(dataObj.getTime())) {
+                const dia = String(dataObj.getUTCDate()).padStart(2, '0');
+                const mes = String(dataObj.getUTCMonth() + 1).padStart(2, '0');
+                const ano = dataObj.getUTCFullYear();
+                return `${dia}/${mes}/${ano}`;
+            }
+        
+            return strData; // Retorna o texto original se não conseguir converter
+        }
     </script>
 </body>
 </html>
