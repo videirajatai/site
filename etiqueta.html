@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+    <title>Etiquetas | Videira</title>
+
+    <!-- Ícone / logo -->
+    <link rel="icon" type="image/png" href="logo.png" />
+    <link rel="shortcut icon" type="image/png" href="logo.png" />
+    <link rel="apple-touch-icon" href="logo.png" />
+
+    <!-- Bibliotecas -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js">
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js">
+    </script>
+
+    <!-- Fonte -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+
+    <style>
+        /* ===== RESET & VARIÁVEIS ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #1a7a4a;
+            /* verde Videira */
+            --primary-dark: #0f5a34;
+            --primary-light: #a8d5ba;
+            --accent: #f5b042;
+            --bg-body: #f6f9f7;
+            --surface: #ffffff;
+            --text-main: #1e2b26;
+            --text-light: #4d6b5f;
+            --text-faint: #95aaa0;
+            --border-color: #dce8e1;
+            --input-bg: #f2f7f4;
+            --shadow-sm: 0 2px 8px rgba(26, 122, 74, 0.06);
+            --shadow-md: 0 8px 24px rgba(26, 122, 74, 0.08);
+            --shadow-lg: 0 16px 40px rgba(26, 122, 74, 0.14);
+            --radius-sm: 0.7rem;
+            --radius-md: 1.1rem;
+            --radius-lg: 1.6rem;
+            --radius-xl: 2rem;
+        }
+
+        body {
+            background: var(--bg-body);
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            color: var(--text-main);
+            min-height: 100vh;
+            padding: 1.5rem 1rem 3rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* ===== TOPO ===== */
+        .app-header {
+            width: 100%;
+            max-width: 720px;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            background: var(--surface);
+            padding: 0.8rem 1.5rem;
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border-color);
+        }
+
+        .app-header img {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .app-header h1 {
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: var(--primary);
+            letter-spacing: -0.3px;
+        }
+
+        .app-header span {
+            font-size: 0.8rem;
+            color: var(--text-light);
+            font-weight: 500;
+            margin-left: auto;
+        }
+
+        /* ===== GRADE DE CATEGORIAS ===== */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 1.2rem;
+            width: 100%;
+            max-width: 720px;
+            margin-bottom: 2rem;
+        }
+
+        .card-categoria {
+            background: var(--surface);
+            border-radius: var(--radius-lg);
+            padding: 1.4rem 0.8rem;
+            text-align: center;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border-color);
+            transition: all 0.2s;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.6rem;
+        }
+
+        .card-categoria:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-md);
+            border-color: var(--primary-light);
+        }
+
+        .card-categoria .emoji {
+            font-size: 2.4rem;
+            line-height: 1;
+        }
+
+        .card-categoria .titulo {
+            font-weight: 700;
+            font-size: 0.95rem;
+            color: var(--text-main);
+        }
+
+        .card-categoria .subtitulo {
+            font-size: 0.7rem;
+            color: var(--text-light);
+            font-weight: 500;
+            background: var(--input-bg);
+            padding: 0.2rem 0.6rem;
+            border-radius: 2rem;
+        }
+
+        /* ===== MODAL ===== */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(30, 43, 38, 0.5);
+            backdrop-filter: blur(6px);
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 1rem;
+        }
+
+        .modal-overlay.aberto {
+            display: flex;
+        }
+
+        .modal-box {
+            background: var(--surface);
+            max-width: 440px;
+            width: 100%;
+            border-radius: var(--radius-xl);
+            padding: 2rem 1.8rem;
+            box-shadow: var(--shadow-lg);
+            animation: modalEntrar 0.25s ease;
+            position: relative;
+        }
+
+        @keyframes modalEntrar {
+            from {
+                opacity: 0;
+                transform: scale(0.95) translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        .modal-box .fechar {
+            position: absolute;
+            top: 0.8rem;
+            right: 1.2rem;
+            font-size: 1.6rem;
+            cursor: pointer;
+            color: var(--text-faint);
+            background: none;
+            border: none;
+            transition: 0.2s;
+            line-height: 1;
+        }
+
+        .modal-box .fechar:hover {
+            color: var(--text-main);
+            transform: rotate(90deg);
+        }
+
+        .modal-box .modal-titulo {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .modal-box .modal-titulo img {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .modal-box label {
+            display: block;
+            font-weight: 600;
+            font-size: 0.8rem;
+            color: var(--text-light);
+            margin-top: 0.8rem;
+            margin-bottom: 0.2rem;
+        }
+
+        .modal-box input {
+            width: 100%;
+            padding: 0.7rem 0.9rem;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border-color);
+            background: var(--input-bg);
+            font-size: 0.95rem;
+            font-family: 'Inter', sans-serif;
+            transition: 0.2s;
+        }
+
+        .modal-box input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(26, 122, 74, 0.12);
+            background: white;
+        }
+
+        .modal-box .botoes {
+            display: flex;
+            gap: 0.8rem;
+            margin-top: 1.6rem;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 0.7rem;
+            border: none;
+            border-radius: var(--radius-md);
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: 0.2s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.4rem;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 4px 12px rgba(26, 122, 74, 0.25);
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: var(--input-bg);
+            color: var(--text-main);
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-secondary:hover {
+            background: #e3ede7;
+        }
+
+        /* ===== TOAST ===== */
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%) translateY(100%);
+            background: var(--text-main);
+            color: white;
+            padding: 0.8rem 1.8rem;
+            border-radius: var(--radius-xl);
+            font-weight: 600;
+            font-size: 0.9rem;
+            box-shadow: var(--shadow-lg);
+            z-index: 2000;
+            opacity: 0;
+            transition: all 0.3s ease;
+            pointer-events: none;
+        }
+
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+
+        .toast-success {
+            background: var(--primary);
+        }
+
+        .toast-error {
+            background: #b34a4a;
+        }
+
+        /* ===== RESPONSIVO ===== */
+        @media (max-width: 480px) {
+            .grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 0.8rem;
+            }
+            .app-header {
+                flex-wrap: wrap;
+                justify-content: center;
+                text-align: center;
+            }
+            .app-header span {
+                margin-left: 0;
+                width: 100%;
+            }
+            .modal-box {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ===== CABEÇALHO ===== -->
+    <header class="app-header">
+        <img src="logo.png" alt="Logo Videira" />
+        <h1>Etiquetas</h1>
+        <span>Igreja Videira · Jataí</span>
+    </header>
+
+    <!-- ===== GRADE DE CATEGORIAS ===== -->
+    <div class="grid" id="gradeCategorias">
+        <!-- Os cards serão gerados pelo JavaScript -->
+    </div>
+
+    <!-- ===== MODAL DE IMPRESSÃO ===== -->
+    <div class="modal-overlay" id="modalImpressao">
+        <div class="modal-box">
+            <button class="fechar" id="fecharModal" aria-label="Fechar">&times;</button>
+
+            <div class="modal-titulo" id="modalTitulo">
+                <img id="modalLogo" src="logo.png" alt="Logo" />
+                <span id="modalNomeEvento">Evento</span>
+            </div>
+
+            <label for="inputNome">Nome completo</label>
+            <input type="text" id="inputNome" placeholder="Digite o nome da pessoa" />
+
+            <label for="inputTelefone">Telefone</label>
+            <input type="tel" id="inputTelefone" placeholder="(64) 99999-9999" />
+
+            <div class="botoes">
+                <button class="btn btn-secondary" id="btnCancelar">Cancelar</button>
+                <button class="btn btn-primary" id="btnImprimir">🖨️ Imprimir</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== TOAST ===== -->
+    <div id="toast" class="toast"></div>
+
+    <!-- ============================================================ -->
+    <!-- ===== SCRIPT ===== -->
+    <!-- ============================================================ -->
+    <script>
+        /* ============================================================
+               CONFIGURAÇÃO DAS CATEGORIAS (ediTE AQUI)
+               ============================================================ */
+
+        // Array com as categorias de etiqueta.
+        // Cada objeto:
+        //   id: identificador único (usado internamente)
+        //   nome: nome que aparece no card
+        //   logo: caminho da imagem (deve estar no mesmo diretório)
+        //   emoji: ícone decorativo (opcional)
+        //   tituloImpressao: texto que aparecerá no topo da etiqueta (ex: "Encontro com Deus")
+        //   cor: cor de destaque (opcional, usada no card)
+
+        const categorias = [{
+            id: 'encontro',
+            nome: 'Encontro com Deus',
+            logo: 'logo.png',
+            emoji: '🙏',
+            tituloImpressao: 'Encontro com Deus',
+            cor: '#1a7a4a'
+        }, {
+            id: 'evento2',
+            nome: 'Evento 2',
+            logo: 'logo2.png', // substitua pelo arquivo real
+            emoji: '🌟',
+            tituloImpressao: 'Evento 2',
+            cor: '#c98a3e'
+        }, {
+            id: 'evento3',
+            nome: 'Evento 3',
+            logo: 'logo3.png',
+            emoji: '🎯',
+            tituloImpressao: 'Evento 3',
+            cor: '#3d7a8c'
+        }, {
+            id: 'evento4',
+            nome: 'Evento 4',
+            logo: 'logo4.png',
+            emoji: '💒',
+            tituloImpressao: 'Evento 4',
+            cor: '#7a5ca3'
+        }, {
+            id: 'evento5',
+            nome: 'Evento 5',
+            logo: 'logo5.png',
+            emoji: '🔥',
+            tituloImpressao: 'Evento 5',
+            cor: '#b34a4a'
+        }];
+
+        /* ============================================================
+           FUNÇÕES DE IMPRESSÃO (baseadas no equipe.html)
+           ============================================================ */
+
+        // Largura e altura da etiqueta (em px) – mesma config do equipe.html
+        const LABEL_WIDTH = 384;
+        const LABEL_HEIGHT = 200;
+
+        /**
+         * Gera a etiqueta em forma de imagem e envia para a impressora via rawbt.
+         * @param {string} nome - Nome da pessoa
+         * @param {string} telefone - Telefone
+         * @param {string} logoUrl - Caminho da logo
+         * @param {string} titulo - Título do evento (ex: "Encontro com Deus")
+         */
+        async function imprimirEtiqueta(nome, telefone, logoUrl, titulo) {
+            // Validação básica
+            if (!nome || nome.trim() === '') {
+                mostrarToast('Preencha o nome da pessoa.', 'error');
+                return;
+            }
+
+            // 1) Cria o container da etiqueta (oculto)
+            const container = document.createElement('div');
+            container.style.position = 'fixed';
+            container.style.left = '-9999px';
+            container.style.top = '0';
+            container.style.width = LABEL_WIDTH + 'px';
+            container.style.height = LABEL_HEIGHT + 'px';
+            container.style.backgroundColor = '#ffffff';
+            container.style.padding = '6px';
+            container.style.boxSizing = 'border-box';
+            container.style.display = 'flex';
+            container.style.alignItems = 'center';
+            container.style.gap = '8px';
+            container.style.fontFamily = 'Arial, Helvetica, sans-serif';
+            container.style.color = '#1e2b26';
+            container.style.overflow = 'hidden';
+
+            // 2) Conteúdo da etiqueta
+            container.innerHTML = `
+                <div style="flex:0 0 120px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px;">
+                    <img src="${logoUrl}" style="width:100px; height:100px; border-radius:50%; object-fit:cover; border:2px solid #dce8e1;" alt="Logo" />
+                    <div style="font-size:13px; font-weight:700; color:var(--primary); letter-spacing:0.5px; text-align:center;">${titulo || ''}</div>
+                </div>
+                <div style="flex:1; min-width:0; display:flex; flex-direction:column; justify-content:center; gap:2px; padding-right:4px;">
+                    <div style="font-size:28px; font-weight:800; line-height:1.1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${escapeHtml(nome)}</div>
+                    <div style="font-size:18px; font-weight:500; color:#4d6b5f; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">📞 ${escapeHtml(telefone) || '—'}</div>
+                </div>
+            `;
+
+            document.body.appendChild(container);
+
+            // 3) Captura com html2canvas
+            try {
+                const canvas = await html2canvas(container, {
+                    width: LABEL_WIDTH,
+                    height: LABEL_HEIGHT,
+                    scale: 1,
+                    backgroundColor: '#ffffff',
+                    useCORS: true,
+                    logging: false
+                });
+
+                // 4) Remove o container
+                document.body.removeChild(container);
+
+                // 5) Converte para base64 e envia via rawbt
+                const imagemBase64 = canvas.toDataURL('image/png');
+                window.location.href = 'rawbt:' + imagemBase64;
+
+                mostrarToast('Etiqueta enviada para impressão!', 'success');
+
+            } catch (err) {
+                document.body.removeChild(container);
+                console.error('Erro ao gerar etiqueta:', err);
+                mostrarToast('Erro ao gerar a etiqueta.', 'error');
+            }
+        }
+
+        /* ============================================================
+           UTILITÁRIOS
+           ============================================================ */
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str.replace(/[&<>]/g, m => m === '&' ? '&amp;' : (m === '<' ? '&lt;' : '&gt;'));
+        }
+
+        function mostrarToast(mensagem, tipo = 'info') {
+            const toast = document.getElementById('toast');
+            toast.textContent = mensagem;
+            toast.className = 'toast';
+            if (tipo === 'success') toast.classList.add('toast-success');
+            if (tipo === 'error') toast.classList.add('toast-error');
+            toast.classList.add('show');
+            clearTimeout(toast._timeout);
+            toast._timeout = setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        /* ============================================================
+           INTERFACE - CARDS E MODAL
+           ============================================================ */
+
+        // Referências do DOM
+        const grade = document.getElementById('gradeCategorias');
+        const modal = document.getElementById('modalImpressao');
+        const fecharModalBtn = document.getElementById('fecharModal');
+        const cancelarBtn = document.getElementById('btnCancelar');
+        const imprimirBtn = document.getElementById('btnImprimir');
+        const inputNome = document.getElementById('inputNome');
+        const inputTelefone = document.getElementById('inputTelefone');
+        const modalTitulo = document.getElementById('modalTitulo');
+        const modalLogo = document.getElementById('modalLogo');
+        const modalNomeEvento = document.getElementById('modalNomeEvento');
+
+        let categoriaSelecionada = null;
+
+        // Gera os cards dinamicamente
+        function renderizarCards() {
+            grade.innerHTML = '';
+            categorias.forEach(cat => {
+                const card = document.createElement('div');
+                card.className = 'card-categoria';
+                card.style.borderTop = `4px solid ${cat.cor || '#1a7a4a'}`;
+                card.innerHTML = `
+                    <div class="emoji">${cat.emoji || '🏷️'}</div>
+                    <div class="titulo">${cat.nome}</div>
+                    <div class="subtitulo">${cat.tituloImpressao}</div>
+                `;
+                card.addEventListener('click', () => abrirModal(cat));
+                grade.appendChild(card);
+            });
+        }
+
+        function abrirModal(categoria) {
+            categoriaSelecionada = categoria;
+            // Preenche o título do modal
+            modalLogo.src = categoria.logo || 'logo.png';
+            modalNomeEvento.textContent = categoria.nome;
+
+            // Limpa campos
+            inputNome.value = '';
+            inputTelefone.value = '';
+
+            // Abre
+            modal.classList.add('aberto');
+            inputNome.focus();
+        }
+
+        function fecharModal() {
+            modal.classList.remove('aberto');
+            categoriaSelecionada = null;
+        }
+
+        // Ação de imprimir
+        function acaoImprimir() {
+            if (!categoriaSelecionada) {
+                mostrarToast('Nenhuma categoria selecionada.', 'error');
+                return;
+            }
+            const nome = inputNome.value.trim();
+            const telefone = inputTelefone.value.trim();
+
+            if (!nome) {
+                mostrarToast('Digite o nome da pessoa.', 'error');
+                inputNome.focus();
+                return;
+            }
+
+            // Chama a impressão
+            imprimirEtiqueta(nome, telefone, categoriaSelecionada.logo, categoriaSelecionada.tituloImpressao);
+
+            // Opcional: fecha o modal após enviar? Deixamos aberto para impressões em sequência.
+            // Se quiser fechar, descomente:
+            // fecharModal();
+        }
+
+        // Eventos dos botões
+        fecharModalBtn.addEventListener('click', fecharModal);
+        cancelarBtn.addEventListener('click', fecharModal);
+        imprimirBtn.addEventListener('click', acaoImprimir);
+
+        // Fechar modal clicando no overlay
+        modal.addEventListener('click', function(e) {
+            if (e.target === modal) fecharModal();
+        });
+
+        // Atalho Enter no campo nome/telefone
+        inputNome.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                inputTelefone.focus();
+            }
+        });
+        inputTelefone.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                acaoImprimir();
+            }
+        });
+
+        // Inicializa
+        renderizarCards();
+
+        // (Opcional) Se quiser pré-carregar as logos, pode adicionar um cache aqui.
+        console.log('✅ Etiquetas carregado. Categorias:', categorias.map(c => c.nome).join(', '));
+    </script>
+
+</body>
+</html>
