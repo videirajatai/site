@@ -3,17 +3,6 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-
-    <link rel="icon" type="image/png" href="logopad.png">
-    <link rel="shortcut icon" type="image/png" href="logopad.png">
-    <link rel="apple-touch-icon" href="logopad.png">
-
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="application-name" content="Pads - Wolf Sistemas">
-    <meta name="apple-mobile-web-app-title" content="Pads - Wolf Sistemas">
-    <meta name="theme-color" content="#0f172a">    
-  
 <title>NÉVOA — Pads Harmônicos</title>
 <style>
   :root{
@@ -314,7 +303,7 @@
 
   function initAudio(){
     if (audioCtx) return;
-    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)({ latencyHint: 'playback' });
 
     masterGain = audioCtx.createGain(); masterGain.gain.value = 0.7;
     compressor = audioCtx.createDynamicsCompressor();
@@ -375,7 +364,7 @@
     // ---- Reverb (convolução) ----
     reverbSend = audioCtx.createGain(); reverbSend.gain.value = 1;
     const convolver = audioCtx.createConvolver();
-    convolver.buffer = createImpulseResponse(audioCtx, 4.2, 3.4);
+    convolver.buffer = createImpulseResponse(audioCtx, 3.2, 3.2);
     reverbOut = audioCtx.createGain(); reverbOut.gain.value = reverbMixVal;
     reverbSend.connect(convolver);
     convolver.connect(reverbOut);
@@ -543,6 +532,8 @@
     });
   }
 
+  const MAX_SIMULTANEOUS_PADS = 6;
+
   async function togglePad(padId, preset, el){
     if (!audioCtx) initAudio();
     if (audioCtx.state === 'suspended') await audioCtx.resume();
@@ -552,6 +543,13 @@
       activePads.delete(padId);
       el.classList.remove('active');
     } else {
+      if (activePads.size >= MAX_SIMULTANEOUS_PADS){
+        const statusText = document.getElementById('statusText');
+        const original = statusText.textContent;
+        statusText.textContent = 'limite de ' + MAX_SIMULTANEOUS_PADS + ' pads (evita sobrecarga)';
+        setTimeout(() => { statusText.textContent = original; }, 1800);
+        return;
+      }
       const voices = buildVoicesForPad(preset);
       activePads.set(padId, { voices, preset });
       el.classList.add('active');
@@ -667,14 +665,22 @@
       onChange(v);
     });
   }
-  bindSlider('globalVolume','vol-val', v => Math.round(v*100)+'%', v => { if (masterGain) masterGain.gain.value = v; });
-  bindSlider('cutoff','cutoff-val', v => Math.round(v*100)+'%', v => { cutoffMul = v; });
+  function smoothSet(param, value, timeConstant){
+    if (!audioCtx || !param) return;
+    param.setTargetAtTime(value, audioCtx.currentTime, timeConstant || 0.06);
+  }
+
+  bindSlider('globalVolume','vol-val', v => Math.round(v*100)+'%', v => { if (masterGain) smoothSet(masterGain.gain, v, 0.05); });
+  bindSlider('cutoff','cutoff-val', v => Math.round(v*100)+'%', v => {
+    cutoffMul = v;
+    if (globalFilter) smoothSet(globalFilter.frequency, Math.min(16000, 2200 * v + 400), 0.08);
+  });
   bindSlider('unison','unison-val', v => v+' voz'+(v>1?'es':''), v => { unisonCount = v; });
   bindSlider('attack','attack-val', v => v.toFixed(2)+'s', v => { attackTime = v; });
   bindSlider('release','release-val', v => v.toFixed(2)+'s', v => { releaseTime = v; });
-  bindSlider('chorusMix','chorus-val', v => Math.round(v*100)+'%', v => { chorusMixVal=v; if(chorusOut) chorusOut.gain.value=v; });
-  bindSlider('delayMix','delay-val', v => Math.round(v*100)+'%', v => { delayMixVal=v; if(delayOut) delayOut.gain.value=v; });
-  bindSlider('reverbMix','reverb-val', v => Math.round(v*100)+'%', v => { reverbMixVal=v; if(reverbOut) reverbOut.gain.value=v; });
+  bindSlider('chorusMix','chorus-val', v => Math.round(v*100)+'%', v => { chorusMixVal=v; if(chorusOut) smoothSet(chorusOut.gain, v, 0.08); });
+  bindSlider('delayMix','delay-val', v => Math.round(v*100)+'%', v => { delayMixVal=v; if(delayOut) smoothSet(delayOut.gain, v, 0.08); });
+  bindSlider('reverbMix','reverb-val', v => Math.round(v*100)+'%', v => { reverbMixVal=v; if(reverbOut) smoothSet(reverbOut.gain, v, 0.08); });
 
   document.getElementById('stopAllBtn').addEventListener('click', stopAllPads);
 
