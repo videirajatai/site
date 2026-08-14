@@ -389,10 +389,7 @@
     <!-- ===== SCRIPT ===== -->
     <!-- ============================================================ -->
     <script>
-        /* ============================================================
-               CONFIGURAÇÃO DAS CATEGORIAS (ediTE AQUI)
-               ============================================================ */
-
+        
         // Array com as categorias de etiqueta.
         // Cada objeto:
         //   id: identificador único (usado internamente)
@@ -406,8 +403,7 @@
             id: 'encontro',
             nome: 'Encontro com Deus',
             logo: 'logo1.png',
-            //emoji: '🙏',
-            emoji: 'logo1.png',
+            emoji: '🙏',     
             tituloImpressao: 'Encontro com Deus',
             cor: '#1a7a4a'
         }, {
@@ -569,7 +565,7 @@
                 card.className = 'card-categoria';
                 card.style.borderTop = `4px solid ${cat.cor || '#1a7a4a'}`;
                 card.innerHTML = `
-                    <div class="emoji">${cat.emoji || '🏷️'}</div>
+                    <div class="emoji">${cat.logo1 || '🏷️'}</div>
                     <div class="titulo">${cat.nome}</div>
                     <div class="subtitulo">${cat.tituloImpressao}</div>
                 `;
