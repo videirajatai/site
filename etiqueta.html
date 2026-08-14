@@ -19,10 +19,6 @@
     <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js">
     </script>
 
-    <!-- Biblioteca para gerar payload Pix -->
-    <script src="https://cdn.jsdelivr.net/npm/pix-payload@1.0.0/dist/index.min.js">
-    </script>
-
     <!-- Fonte -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
 
@@ -440,8 +436,8 @@
     <!-- ============================================================ -->
     <script>
         /* ============================================================
-               CONFIGURAÇÃO DAS CATEGORIAS (ediTE AQUI)
-               ============================================================ */
+           CONFIGURAÇÃO DAS CATEGORIAS (ediTE AQUI)
+           ============================================================ */
 
         const categorias = [{
             id: 'encontro',
@@ -486,6 +482,94 @@
         }];
 
         /* ============================================================
+           FUNÇÃO MANUAL PARA GERAR PAYLOAD PIX (SEM DEPENDÊNCIAS EXTERNAS)
+           ============================================================ */
+
+        /**
+         * Gera o payload Pix completo conforme padrão BACEN (EMV).
+         * @param {string} chave - Chave Pix (telefone, email, CPF, CNPJ)
+         * @param {string} nome - Nome do destinatário
+         * @param {string} cidade - Cidade do destinatário
+         * @param {number} [valor] - Valor opcional (em reais)
+         * @param {string} [txid] - Identificador da transação (opcional)
+         * @returns {string} Payload Pix completo
+         */
+        function gerarPayloadPix(chave, nome, cidade, valor = null, txid = null) {
+            // --- Funções auxiliares ---
+            function adicionarCampo(id, valor) {
+                const len = String(valor).length.toString().padStart(2, '0');
+                return id + len + valor;
+            }
+
+            function calcularCRC16(payload) {
+                let crc = 0xFFFF;
+                for (let i = 0; i < payload.length; i++) {
+                    crc ^= payload.charCodeAt(i) << 8;
+                    for (let j = 0; j < 8; j++) {
+                        if (crc & 0x8000) {
+                            crc = (crc << 1) ^ 0x1021;
+                        } else {
+                            crc <<= 1;
+                        }
+                        crc &= 0xFFFF;
+                    }
+                }
+                return crc.toString(16).toUpperCase().padStart(4, '0');
+            }
+
+            // --- Montagem do payload ---
+            let payload = '';
+
+            // 00 - Payload Format Indicator
+            payload += adicionarCampo('00', '01');
+
+            // 01 - Point of Initiation Method (12 = estático, sem valor fixo)
+            payload += adicionarCampo('01', '12');
+
+            // 26 - Merchant Account Information (Pix)
+            const gui = 'BR.GOV.BCB.PIX'; // GUI do Pix
+            const chaveFormatada = chave.trim();
+            let merchantAccount = adicionarCampo('00', gui);
+            merchantAccount += adicionarCampo('01', chaveFormatada);
+            // Se houver valor, adiciona campo 54 (valor)
+            if (valor !== null && valor > 0) {
+                const valorFormatado = valor.toFixed(2);
+                merchantAccount += adicionarCampo('54', valorFormatado);
+            }
+            payload += adicionarCampo('26', merchantAccount);
+
+            // 52 - Merchant Category Code (0000 = genérico)
+            payload += adicionarCampo('52', '0000');
+
+            // 53 - Transaction Currency (986 = BRL)
+            payload += adicionarCampo('53', '986');
+
+            // 58 - Country Code (BR)
+            payload += adicionarCampo('58', 'BR');
+
+            // 59 - Merchant Name (até 25 caracteres)
+            const nomeCurto = nome.substring(0, 25);
+            payload += adicionarCampo('59', nomeCurto);
+
+            // 60 - Merchant City (até 15 caracteres)
+            const cidadeCurta = cidade.substring(0, 15);
+            payload += adicionarCampo('60', cidadeCurta);
+
+            // 62 - Additional Data Field (txid opcional)
+            if (txid) {
+                const txidCurto = txid.substring(0, 25);
+                payload += adicionarCampo('62', adicionarCampo('05', txidCurto));
+            }
+
+            // 63 - CRC16 (será calculado)
+            const payloadSemCRC = payload + '6304';
+            const crc = calcularCRC16(payloadSemCRC);
+            payload += '6304' + crc;
+
+            return payload;
+        }
+
+        /* ============================================================
            FUNÇÕES DE IMPRESSÃO
            ============================================================ */
 
@@ -509,17 +593,14 @@
                     return;
                 }
 
-                // Se for Pix, validar a chave e gerar payload
+                // Se for Pix, gerar payload manualmente
                 if (opts.qrData.tipo === 'pix') {
                     try {
-                        // A biblioteca está disponível globalmente: PixPayload
-                        const nomeDestinatario = 'Igreja Videira'; // pode ser personalizado
-                        const cidade = 'Jataí';
-                        const payload = PixPayload.generate({
-                            chave: valor,
-                            nome: nomeDestinatario,
-                            cidade: cidade
-                        });
+                        // Dados fixos do destinatário (personalize conforme necessário)
+                        const nomeDestinatario = 'Igreja Videira';
+                        const cidadeDestinatario = 'Jatai';
+                        // Gera o payload usando a função manual
+                        const payload = gerarPayloadPix(valor, nomeDestinatario, cidadeDestinatario);
                         opts.qrData.payload = payload;
                     } catch (err) {
                         mostrarToast('Erro ao gerar payload Pix: ' + err.message, 'error');
