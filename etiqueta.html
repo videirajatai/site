@@ -130,7 +130,6 @@
             border-color: var(--primary-light);
         }
 
-        /* Ícone da logo (miniatura) */
         .card-categoria .logo-mini {
             width: 56px;
             height: 56px;
@@ -386,11 +385,14 @@
                 <span id="modalNomeEvento">Evento</span>
             </div>
 
-            <label for="inputNome">Nome completo</label>
-            <input type="text" id="inputNome" placeholder="Digite o nome da pessoa" />
+            <!-- Campos de Nome e Telefone (ocultos no QR Code) -->
+            <div id="camposNomeTelefone">
+                <label for="inputNome">Nome completo</label>
+                <input type="text" id="inputNome" placeholder="Digite o nome da pessoa" />
 
-            <label for="inputTelefone">Telefone</label>
-            <input type="tel" id="inputTelefone" placeholder="(64) 99999-9999" />
+                <label for="inputTelefone">Telefone</label>
+                <input type="tel" id="inputTelefone" placeholder="(64) 99999-9999" />
+            </div>
 
             <!-- Campos extras para QR Code (Evento 6) -->
             <div id="qrOptions" style="display:none;">
@@ -398,9 +400,10 @@
                 <select id="qrTipo">
                     <option value="whatsapp">WhatsApp</option>
                     <option value="link">Link (URL)</option>
+                    <option value="pix">Chave PIX</option>
                 </select>
-                <label for="qrValor">Valor (número ou URL)</label>
-                <input type="text" id="qrValor" placeholder="(64) 99999-9999 ou google.com" />
+                <label for="qrValor">Valor (número, URL ou chave PIX)</label>
+                <input type="text" id="qrValor" placeholder="(64) 99999-9999, google.com, ou chave PIX" />
             </div>
 
             <div class="botoes">
@@ -446,7 +449,6 @@
             tituloImpressao: 'Radicais Livres',
             cor: '#7a5ca3'
         }, {
-            // Evento 5 - sem logo (nome ocupa toda a etiqueta)
             id: 'evento5',
             nome: 'Nome Grande',
             logo: null,
@@ -454,7 +456,6 @@
             cor: '#b34a4a',
             especial: 'semLogo'
         }, {
-            // Evento 6 - QR Code
             id: 'evento6',
             nome: 'QR Code',
             logo: null,
@@ -472,31 +473,33 @@
 
         /**
          * Gera a etiqueta conforme as opções.
-         * @param {string} nome - Nome da pessoa
-         * @param {string} telefone - Telefone
+         * @param {string} nome - Nome da pessoa (pode ser vazio para QR)
+         * @param {string} telefone - Telefone (pode ser vazio para QR)
          * @param {object} opts - Opções de impressão
          * @param {boolean} opts.semLogo - Se true, não exibe logo (nome ocupa todo o espaço)
          * @param {object} opts.qrData - Se definido, gera QR Code com { tipo, valor }
          */
         async function imprimirEtiqueta(nome, telefone, opts = {}) {
-            if (!nome || nome.trim() === '') {
-                mostrarToast('Preencha o nome da pessoa.', 'error');
-                return;
-            }
-
-            // Se for QR Code, validar o valor
+            // Se for QR Code, não exige nome
             if (opts.qrData) {
                 const valor = opts.qrData.valor.trim();
                 if (!valor) {
                     mostrarToast('Preencha o valor do QR Code.', 'error');
                     return;
                 }
-                // Se for link, validação simples (mas já formatado upstream)
+                // Se for link, validação simples
                 if (opts.qrData.tipo === 'link') {
                     if (!valor.startsWith('http://') && !valor.startsWith('https://')) {
                         mostrarToast('URL inválida. Deve começar com http:// ou https://', 'error');
                         return;
                     }
+                }
+                // Para PIX, não valida formato, aceita qualquer string
+            } else {
+                // Para as outras categorias, nome é obrigatório
+                if (!nome || nome.trim() === '') {
+                    mostrarToast('Preencha o nome da pessoa.', 'error');
+                    return;
                 }
             }
 
@@ -526,27 +529,24 @@
                     </div>
                 `;
             } else if (opts.qrData) {
-                // QR Code
-                // Gerar QR Code em um canvas temporário
+                // QR Code: gera imagem do QR
                 const qrContainer = document.createElement('div');
                 qrContainer.style.position = 'fixed';
                 qrContainer.style.left = '-9999px';
                 qrContainer.style.top = '0';
                 document.body.appendChild(qrContainer);
-                // Tamanho do QR: 130x130 (mesmo da logo)
+                // Tamanho do QR: 130x130
                 new QRCode(qrContainer, {
                     text: opts.qrData.valor,
                     width: 130,
                     height: 130
                 });
-                // Aguardar renderização
                 await new Promise(resolve => setTimeout(resolve, 100));
                 const canvasQr = qrContainer.querySelector('canvas');
                 let qrDataUrl = '';
                 if (canvasQr) {
                     qrDataUrl = canvasQr.toDataURL('image/png');
                 } else {
-                    // fallback
                     const imgQr = qrContainer.querySelector('img');
                     if (imgQr && imgQr.src) qrDataUrl = imgQr.src;
                 }
@@ -557,15 +557,14 @@
                     return;
                 }
 
-                // Monta etiqueta com QR Code
+                // Etiqueta com QR Code (sem nome e telefone)
+                const tituloQR = opts.qrData.tipo === 'whatsapp' ? 'WhatsApp' :
+                                 opts.qrData.tipo === 'link' ? 'Link' :
+                                 'PIX';
                 container.innerHTML = `
-                    <div style="flex:0 0 130px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px;">
-                        <img src="${qrDataUrl}" style="width:130px; height:130px; border:2px solid #dce8e1; border-radius:8px;" alt="QR Code" />
-                        <div style="font-size:13px; font-weight:700; color:var(--primary); letter-spacing:0.5px; text-align:center;">${opts.qrData.tipo === 'whatsapp' ? 'WhatsApp' : 'Link'}</div>
-                    </div>
-                    <div style="flex:1; min-width:0; display:flex; flex-direction:column; justify-content:center; gap:2px; padding-right:4px;">
-                        <div style="font-size:30px; font-weight:800; line-height:1.1; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; word-break:break-word;">${escapeHtml(nome)}</div>
-                        <div style="font-size:22px; font-weight:500; color:#4d6b5f; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">📞 ${escapeHtml(telefone) || '—'}</div>
+                    <div style="flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; padding:0 8px;">
+                        <img src="${qrDataUrl}" style="width:160px; height:160px; border:2px solid #dce8e1; border-radius:8px;" alt="QR Code" />
+                        <div style="font-size:16px; font-weight:700; color:var(--primary); letter-spacing:0.5px; text-align:center;">${tituloQR}</div>
                     </div>
                 `;
             } else {
@@ -640,6 +639,7 @@
         const imprimirBtn = document.getElementById('btnImprimir');
         const inputNome = document.getElementById('inputNome');
         const inputTelefone = document.getElementById('inputTelefone');
+        const camposNomeTelefone = document.getElementById('camposNomeTelefone');
         const modalLogo = document.getElementById('modalLogo');
         const modalNomeEvento = document.getElementById('modalNomeEvento');
         const qrOptions = document.getElementById('qrOptions');
@@ -677,19 +677,29 @@
             modalLogo.src = categoria.logo || 'logo.png';
             modalNomeEvento.textContent = categoria.nome;
 
+            // Limpa campos
             inputNome.value = '';
             inputTelefone.value = '';
 
+            // Por padrão, mostra campos de nome/telefone e esconde QR
+            camposNomeTelefone.style.display = 'block';
             qrOptions.style.display = 'none';
 
+            // Se for QR Code, esconde campos de nome/telefone e mostra QR
             if (categoria.especial === 'qrCode') {
+                camposNomeTelefone.style.display = 'none';
                 qrOptions.style.display = 'block';
                 qrTipo.value = 'whatsapp';
                 qrValor.value = '';
             }
 
             modal.classList.add('aberto');
-            inputNome.focus();
+            // Foco no primeiro campo visível
+            if (categoria.especial === 'qrCode') {
+                qrValor.focus();
+            } else {
+                inputNome.focus();
+            }
         }
 
         function fecharModal() {
@@ -702,18 +712,18 @@
                 mostrarToast('Nenhuma categoria selecionada.', 'error');
                 return;
             }
+
             const nome = inputNome.value.trim();
             const telefone = inputTelefone.value.trim();
-
-            if (!nome) {
-                mostrarToast('Digite o nome da pessoa.', 'error');
-                inputNome.focus();
-                return;
-            }
 
             const opts = {};
 
             if (categoriaSelecionada.especial === 'semLogo') {
+                if (!nome) {
+                    mostrarToast('Digite o nome da pessoa.', 'error');
+                    inputNome.focus();
+                    return;
+                }
                 opts.semLogo = true;
             } else if (categoriaSelecionada.especial === 'qrCode') {
                 const tipo = qrTipo.value;
@@ -740,19 +750,29 @@
                     }
                     qrTexto = `https://wa.me/${pais}${numero}`;
                 } else if (tipo === 'link') {
-                    // Auto-formata: adiciona https:// se não tiver protocolo
                     if (!valor.startsWith('http://') && !valor.startsWith('https://')) {
                         qrTexto = 'https://' + valor;
                     } else {
                         qrTexto = valor;
                     }
+                } else if (tipo === 'pix') {
+                    // Chave PIX: mantém o valor digitado (telefone, email, CPF/CNPJ)
+                    qrTexto = valor; // sem formatação extra
                 }
                 opts.qrData = { tipo, valor: qrTexto };
+                // Nome e telefone não são usados no QR
             } else {
+                // Categorias normais (1 a 4)
+                if (!nome) {
+                    mostrarToast('Digite o nome da pessoa.', 'error');
+                    inputNome.focus();
+                    return;
+                }
                 opts.logoUrl = categoriaSelecionada.logo || 'logo.png';
                 opts.titulo = categoriaSelecionada.tituloImpressao || '';
             }
 
+            // Para categorias normais, passa nome e telefone; para QR, esses valores são ignorados
             imprimirEtiqueta(nome, telefone, opts);
         }
 
@@ -765,14 +785,11 @@
             if (e.target === modal) fecharModal();
         });
 
+        // Atalhos de Enter
         inputNome.addEventListener('keydown', (e) => {
             if (e.key === 'Enter') {
                 e.preventDefault();
-                if (categoriaSelecionada && categoriaSelecionada.especial === 'qrCode') {
-                    qrValor.focus();
-                } else {
-                    inputTelefone.focus();
-                }
+                inputTelefone.focus();
             }
         });
         inputTelefone.addEventListener('keydown', (e) => {
