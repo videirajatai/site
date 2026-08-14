@@ -369,6 +369,37 @@
         .campo-telefone.oculto {
             display: none;
         }
+
+        /* Estilos para impressão via PC (driver POS58) */
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+            #etiquetaParaImpressao,
+            #etiquetaParaImpressao * {
+                visibility: visible;
+            }
+            #etiquetaParaImpressao {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 58mm;
+                height: 30mm;
+                margin: 0;
+                padding: 0;
+                border: none;
+                overflow: hidden;
+            }
+            #etiquetaParaImpressao img {
+                width: 100%;
+                height: 100%;
+                object-fit: contain;
+            }
+            @page {
+                size: 58mm 30mm;
+                margin: 0;
+            }
+        }
     </style>
 </head>
 <body>
@@ -430,6 +461,9 @@
 
     <!-- ===== TOAST ===== -->
     <div id="toast" class="toast"></div>
+
+    <!-- Elemento oculto para impressão via PC (populado dinamicamente) -->
+    <div id="etiquetaParaImpressao" style="display:none;"></div>
 
     <!-- ============================================================ -->
     <!-- ===== SCRIPT ===== -->
@@ -570,19 +604,22 @@
         }
 
         /* ============================================================
-           FUNÇÕES DE IMPRESSÃO
+           FUNÇÃO PARA DETECTAR DISPOSITIVO
+           ============================================================ */
+
+        function isMobile() {
+            return /Android|iPhone|iPad|iPod|BlackBerry|Windows Phone/i.test(navigator.userAgent);
+        }
+
+        /* ============================================================
+           FUNÇÃO DE IMPRESSÃO (COM DETECÇÃO DE DISPOSITIVO)
            ============================================================ */
 
         const LABEL_WIDTH = 384;
         const LABEL_HEIGHT = 200;
 
         /**
-         * Gera a etiqueta conforme as opções.
-         * @param {string} nome - Nome da pessoa (apenas para eventos normais)
-         * @param {string} telefone - Telefone (apenas para eventos normais)
-         * @param {object} opts - Opções de impressão
-         * @param {boolean} opts.semLogo - Se true, não exibe logo (nome ocupa todo o espaço)
-         * @param {object} opts.qrData - Se definido, gera QR Code com { tipo, valor }
+         * Gera a etiqueta e imprime via rawbt (mobile) ou via print() (PC).
          */
         async function imprimirEtiqueta(nome, telefone, opts = {}) {
             // Se for QR Code, validar o valor
@@ -596,10 +633,8 @@
                 // Se for Pix, gerar payload manualmente
                 if (opts.qrData.tipo === 'pix') {
                     try {
-                        // Dados fixos do destinatário (personalize conforme necessário)
                         const nomeDestinatario = 'Igreja Videira';
                         const cidadeDestinatario = 'Jatai';
-                        // Gera o payload usando a função manual
                         const payload = gerarPayloadPix(valor, nomeDestinatario, cidadeDestinatario);
                         opts.qrData.payload = payload;
                     } catch (err) {
@@ -607,7 +642,6 @@
                         return;
                     }
                 } else if (opts.qrData.tipo === 'whatsapp') {
-                    // Formata número para link wa.me
                     const numeros = valor.replace(/\D/g, '');
                     if (numeros.length < 10) {
                         mostrarToast('Número de WhatsApp inválido (mínimo 10 dígitos).', 'error');
@@ -621,7 +655,6 @@
                     }
                     opts.qrData.valor = `https://wa.me/${pais}${numero}`;
                 } else if (opts.qrData.tipo === 'link') {
-                    // Auto-formata: adiciona https:// se não tiver protocolo
                     if (!valor.startsWith('http://') && !valor.startsWith('https://')) {
                         opts.qrData.valor = 'https://' + valor;
                     } else {
@@ -630,7 +663,8 @@
                 }
             }
 
-            // Container da etiqueta
+            // ---------------------- CONSTRUÇÃO DA ETIQUETA (HTML) ----------------------
+            // Container para montar a etiqueta (sempre usando o mesmo tamanho)
             const container = document.createElement('div');
             container.style.position = 'fixed';
             container.style.left = '-9999px';
@@ -647,12 +681,10 @@
             container.style.color = '#1e2b26';
             container.style.overflow = 'hidden';
 
-            // Caso especial: QR Code
+            // Conteúdo da etiqueta (mesmo de antes)
             if (opts.qrData) {
-                // Texto do QR: pode ser o payload (Pix) ou o valor formatado (WhatsApp/Link)
+                // QR Code (WhatsApp, Link ou Pix)
                 const qrText = opts.qrData.payload || opts.qrData.valor;
-
-                // Gerar QR Code
                 const qrContainer = document.createElement('div');
                 qrContainer.style.position = 'fixed';
                 qrContainer.style.left = '-9999px';
@@ -660,8 +692,8 @@
                 document.body.appendChild(qrContainer);
                 new QRCode(qrContainer, {
                     text: qrText,
-                    width: 200,
-                    height: 200
+                    width: 160,
+                    height: 160
                 });
                 await new Promise(resolve => setTimeout(resolve, 100));
                 const canvasQr = qrContainer.querySelector('canvas');
@@ -679,22 +711,19 @@
                     return;
                 }
 
-                // Determina o título do subtipo
                 let subtitulo = '';
                 if (opts.qrData.tipo === 'whatsapp') subtitulo = 'WhatsApp';
                 else if (opts.qrData.tipo === 'link') subtitulo = 'Link';
-                else if (opts.qrData.tipo === 'pix') subtitulo = 'Chave Pix';
+                else if (opts.qrData.tipo === 'pix') subtitulo = 'Pix';
 
-                // Etiqueta com QR Code e título, sem nome/telefone
                 container.innerHTML = `
                     <div style="flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px; padding:4px;">
-                        <img src="${qrDataUrl}" style="width:165px; height:165px; border:2px solid #dce8e1;" alt="QR Code" />
-                        <!--<div style="font-size:18px; font-weight:700; color:var(--primary); letter-spacing:0.5px; text-align:center;">${opts.titulo || 'QR Code'}</div>-->
+                        <img src="${qrDataUrl}" style="width:170px; height:170px; border:2px solid #dce8e1; border-radius:12px;" alt="QR Code" />
+                        <div style="font-size:18px; font-weight:700; color:var(--primary); letter-spacing:0.5px; text-align:center;">${opts.titulo || 'QR Code'}</div>
                         <div style="font-size:13px; color:var(--text-light); text-align:center;">${subtitulo}</div>
                     </div>
                 `;
             } else if (opts.semLogo) {
-                // Etiqueta sem logo (nome grande)
                 container.innerHTML = `
                     <div style="flex:1; display:flex; flex-direction:column; justify-content:center; align-items:center; padding:0 8px; text-align:center;">
                         <div style="font-size:38px; font-weight:800; line-height:1.2; word-break:break-word; max-width:100%;">${escapeHtml(nome)}</div>
@@ -702,7 +731,6 @@
                     </div>
                 `;
             } else {
-                // Etiqueta padrão com logo
                 const logoUrl = opts.logoUrl || 'logo.png';
                 container.innerHTML = `
                     <div style="flex:0 0 120px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px;">
@@ -718,6 +746,8 @@
 
             document.body.appendChild(container);
 
+            // ---------------------- GERAR IMAGEM (CANVAS) ----------------------
+            let imagemBase64 = '';
             try {
                 const canvas = await html2canvas(container, {
                     width: LABEL_WIDTH,
@@ -727,16 +757,33 @@
                     useCORS: true,
                     logging: false
                 });
-
+                imagemBase64 = canvas.toDataURL('image/png');
                 document.body.removeChild(container);
-                const imagemBase64 = canvas.toDataURL('image/png');
-                window.location.href = 'rawbt:' + imagemBase64;
-                mostrarToast('Etiqueta enviada para impressão!', 'success');
-
             } catch (err) {
                 document.body.removeChild(container);
-                console.error('Erro ao gerar etiqueta:', err);
+                console.error('Erro ao gerar imagem:', err);
                 mostrarToast('Erro ao gerar a etiqueta.', 'error');
+                return;
+            }
+
+            // ---------------------- IMPRESSÃO SEGUNDO DISPOSITIVO ----------------------
+            if (isMobile()) {
+                // MOBILE: rawbt (mantido)
+                window.location.href = 'rawbt:' + imagemBase64;
+                mostrarToast('Etiqueta enviada para impressão (rawbt)!', 'success');
+            } else {
+                // PC: impressão via window.print() com driver POS58
+                const elementoPrint = document.getElementById('etiquetaParaImpressao');
+                elementoPrint.style.display = 'block';
+                elementoPrint.innerHTML = `<img src="${imagemBase64}" alt="Etiqueta" />`;
+                // Chama a impressão
+                window.print();
+                // Limpa após a impressão (opcional)
+                setTimeout(() => {
+                    elementoPrint.style.display = 'none';
+                    elementoPrint.innerHTML = '';
+                }, 1000);
+                mostrarToast('Envie para a impressora POS58.', 'success');
             }
         }
 
@@ -808,7 +855,6 @@
             });
         }
 
-        // Atualiza o placeholder e helper conforme o tipo selecionado
         function atualizarHelper() {
             const tipo = qrTipo.value;
             if (tipo === 'whatsapp') {
@@ -828,29 +874,23 @@
             modalLogo.src = categoria.logo || 'logo.png';
             modalNomeEvento.textContent = categoria.nome;
 
-            // Limpa campos
             inputNome.value = '';
             inputTelefone.value = '';
             qrValor.value = '';
 
-            // Esconde campos extras por padrão
             qrOptions.style.display = 'none';
-            // Mostra campos de nome e telefone por padrão
             campoNome.classList.remove('oculto');
             campoTelefone.classList.remove('oculto');
 
             if (categoria.especial === 'qrCode') {
-                // Oculta nome e telefone
                 campoNome.classList.add('oculto');
                 campoTelefone.classList.add('oculto');
-                // Mostra opções do QR
                 qrOptions.style.display = 'block';
                 qrTipo.value = 'whatsapp';
                 atualizarHelper();
             }
 
             modal.classList.add('aberto');
-            // Foca no primeiro campo visível
             if (!campoNome.classList.contains('oculto')) {
                 inputNome.focus();
             } else {
@@ -895,7 +935,6 @@
                 imprimirEtiqueta('', '', opts);
                 return;
             } else {
-                // Padrão: usar nome, telefone, logo e título
                 const nome = inputNome.value.trim();
                 const telefone = inputTelefone.value.trim();
                 if (!nome) {
@@ -919,10 +958,8 @@
             if (e.target === modal) fecharModal();
         });
 
-        // Atualiza helper ao mudar tipo
         qrTipo.addEventListener('change', atualizarHelper);
 
-        // Atalhos Enter
         inputNome.addEventListener('keydown', (e) => {
             if (e.key === 'Enter') {
                 e.preventDefault();
