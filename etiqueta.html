@@ -15,7 +15,6 @@
     </script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js">
     </script>
-    <!-- QRCode.js para gerar QR Codes -->
     <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js">
     </script>
 
@@ -41,7 +40,6 @@
             --text-light: #4d6b5f;
             --text-faint: #95aaa0;
             --border-color: #dce8e1;
-            --border-colorl: #f7f7f7;
             --input-bg: #f2f7f4;
             --shadow-sm: 0 2px 8px rgba(26, 122, 74, 0.06);
             --shadow-md: 0 8px 24px rgba(26, 122, 74, 0.08);
@@ -76,21 +74,17 @@
             box-shadow: var(--shadow-sm);
             border: 1px solid var(--border-color);
         }
-
         .app-header img {
             width: 48px;
             height: 48px;
             border-radius: 50%;
             object-fit: cover;
         }
-
         .app-header h1 {
             font-size: 1.4rem;
             font-weight: 800;
             color: var(--primary);
-            letter-spacing: -0.3px;
         }
-
         .app-header span {
             font-size: 0.8rem;
             color: var(--text-light);
@@ -121,13 +115,11 @@
             align-items: center;
             gap: 0.6rem;
         }
-
         .card-categoria:hover {
             transform: translateY(-4px);
             box-shadow: var(--shadow-md);
             border-color: var(--primary-light);
         }
-
         .card-categoria .logo-mini {
             width: 56px;
             height: 56px;
@@ -135,13 +127,10 @@
             object-fit: cover;
             background: #fff;
         }
-
         .card-categoria .titulo {
             font-weight: 700;
             font-size: 0.95rem;
-            color: var(--text-main);
         }
-
         .card-categoria .subtitulo {
             font-size: 0.7rem;
             color: var(--text-light);
@@ -165,7 +154,6 @@
             z-index: 1000;
             padding: 1rem;
         }
-
         .modal-overlay.aberto {
             display: flex;
         }
@@ -180,7 +168,6 @@
             animation: modalEntrar 0.25s ease;
             position: relative;
         }
-
         @keyframes modalEntrar {
             from {
                 opacity: 0;
@@ -191,7 +178,6 @@
                 transform: scale(1) translateY(0);
             }
         }
-
         .modal-box .fechar {
             position: absolute;
             top: 0.8rem;
@@ -204,12 +190,10 @@
             transition: 0.2s;
             line-height: 1;
         }
-
         .modal-box .fechar:hover {
             color: var(--text-main);
             transform: rotate(90deg);
         }
-
         .modal-box .modal-titulo {
             font-size: 1.3rem;
             font-weight: 700;
@@ -218,14 +202,12 @@
             align-items: center;
             gap: 0.5rem;
         }
-
         .modal-box .modal-titulo img {
             width: 32px;
             height: 32px;
             border-radius: 50%;
             object-fit: cover;
         }
-
         .modal-box label {
             display: block;
             font-weight: 600;
@@ -234,7 +216,6 @@
             margin-top: 0.8rem;
             margin-bottom: 0.2rem;
         }
-
         .modal-box input,
         .modal-box select {
             width: 100%;
@@ -246,7 +227,6 @@
             font-family: 'Inter', sans-serif;
             transition: 0.2s;
         }
-
         .modal-box input:focus,
         .modal-box select:focus {
             outline: none;
@@ -254,13 +234,11 @@
             box-shadow: 0 0 0 3px rgba(26, 122, 74, 0.12);
             background: white;
         }
-
         .modal-box .botoes {
             display: flex;
             gap: 0.8rem;
             margin-top: 1.6rem;
         }
-
         .btn {
             flex: 1;
             padding: 0.7rem;
@@ -275,24 +253,20 @@
             justify-content: center;
             gap: 0.4rem;
         }
-
         .btn-primary {
             background: var(--primary);
             color: white;
             box-shadow: 0 4px 12px rgba(26, 122, 74, 0.25);
         }
-
         .btn-primary:hover {
             background: var(--primary-dark);
             transform: translateY(-1px);
         }
-
         .btn-secondary {
             background: var(--input-bg);
             color: var(--text-main);
             border: 1px solid var(--border-color);
         }
-
         .btn-secondary:hover {
             background: #e3ede7;
         }
@@ -314,16 +288,13 @@
             transition: all 0.3s ease;
             pointer-events: none;
         }
-
         .toast.show {
             transform: translateX(-50%) translateY(0);
             opacity: 1;
         }
-
         .toast-success {
             background: var(--primary);
         }
-
         .toast-error {
             background: #b34a4a;
         }
@@ -371,15 +342,11 @@
         <span>Igreja Videira · Jataí</span>
     </header>
 
-    <div class="grid" id="gradeCategorias">
-        <!-- Gerado por JS -->
-    </div>
+    <div class="grid" id="gradeCategorias"></div>
 
-    <!-- MODAL -->
     <div class="modal-overlay" id="modalImpressao">
         <div class="modal-box">
-            <button class="fechar" id="fecharModal" aria-label="Fechar">&times;</button>
-
+            <button class="fechar" id="fecharModal">&times;</button>
             <div class="modal-titulo" id="modalTitulo">
                 <img id="modalLogo" src="logo.png" alt="Logo" />
                 <span id="modalNomeEvento">Evento</span>
@@ -389,7 +356,6 @@
                 <label for="inputNome">Nome completo</label>
                 <input type="text" id="inputNome" placeholder="Digite o nome da pessoa" />
             </div>
-
             <div class="campo-telefone">
                 <label for="inputTelefone">Telefone</label>
                 <input type="tel" id="inputTelefone" placeholder="(64) 99999-9999" />
@@ -418,9 +384,6 @@
 
     <div id="toast" class="toast"></div>
 
-    <!-- ============================================================ -->
-    <!-- ===== SCRIPT ===== -->
-    <!-- ============================================================ -->
     <script>
         // ========== CONFIGURAÇÃO DAS CATEGORIAS ==========
         const categorias = [{
@@ -463,7 +426,7 @@
             especial: 'qrCode'
         }];
 
-        // ========== FUNÇÃO PAYLOAD PIX ==========
+        // ========== PAYLOAD PIX MANUAL ==========
         function gerarPayloadPix(chave, nome, cidade, valor = null, txid = null) {
             function adicionarCampo(id, valor) {
                 const len = String(valor).length.toString().padStart(2, '0');
@@ -521,6 +484,7 @@
         const LABEL_HEIGHT = 200;
 
         async function imprimirEtiqueta(nome, telefone, opts = {}) {
+            // --- Validações e preparação do QR ---
             if (opts.qrData) {
                 const valor = opts.qrData.valor.trim();
                 if (!valor) {
@@ -538,7 +502,7 @@
                 } else if (opts.qrData.tipo === 'whatsapp') {
                     const numeros = valor.replace(/\D/g, '');
                     if (numeros.length < 10) {
-                        mostrarToast('Número inválido.', 'error');
+                        mostrarToast('Número inválido (mínimo 10 dígitos).', 'error');
                         return;
                     }
                     let pais = '55',
@@ -557,7 +521,7 @@
                 }
             }
 
-            // Constroi o container da etiqueta
+            // --- Monta o container da etiqueta (HTML) ---
             const container = document.createElement('div');
             container.style.position = 'fixed';
             container.style.left = '-9999px';
@@ -602,7 +566,7 @@
                 else if (opts.qrData.tipo === 'pix') subtitulo = 'Pix';
                 container.innerHTML = `
                     <div style="flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px; padding:4px;">
-                        <img src="${qrDataUrl}" style="width:165px; height:165px; border:2px solid #dce8e1;" alt="QR" />
+                        <img src="${qrDataUrl}" style="width:170px; height:170px; border:2px solid #dce8e1; border-radius:12px;" alt="QR" />
                         <div style="font-size:18px; font-weight:700; color:var(--primary); text-align:center;">${opts.titulo || 'QR Code'}</div>
                         <div style="font-size:13px; color:var(--text-light);">${subtitulo}</div>
                     </div>
@@ -630,12 +594,13 @@
 
             document.body.appendChild(container);
 
+            // --- Gera a imagem da etiqueta (canvas) ---
             let imagemBase64 = '';
             try {
                 const canvas = await html2canvas(container, {
                     width: LABEL_WIDTH,
                     height: LABEL_HEIGHT,
-                    scale: 1,
+                    scale: 2,
                     backgroundColor: '#ffffff',
                     useCORS: true,
                     logging: false
@@ -649,87 +614,57 @@
                 return;
             }
 
-            // ----- IMPRESSÃO -----
+            // ----- IMPRESSÃO SEGUNDO DISPOSITIVO -----
             if (isMobile()) {
+                // Celular: rawbt
                 window.location.href = 'rawbt:' + imagemBase64;
                 mostrarToast('Enviado para rawbt!', 'success');
             } else {
-                // PC: iframe com CSS de impressão
+                // PC: gera PDF com dimensões exatas (58mm x 30mm) e abre para impressão
                 try {
-                    const iframe = document.createElement('iframe');
-                    iframe.style.position = 'fixed';
-                    iframe.style.left = '-9999px';
-                    iframe.style.top = '0';
-                    iframe.style.width = '0';
-                    iframe.style.height = '0';
-                    iframe.style.border = 'none';
-                    document.body.appendChild(iframe);
+                    // Cria um elemento div com a imagem em tamanho real (58mm x 30mm)
+                    const pdfContainer = document.createElement('div');
+                    pdfContainer.style.width = '58mm';
+                    pdfContainer.style.height = '30mm';
+                    pdfContainer.style.margin = '0';
+                    pdfContainer.style.padding = '0';
+                    pdfContainer.style.backgroundColor = '#ffffff';
+                    pdfContainer.style.display = 'flex';
+                    pdfContainer.style.alignItems = 'center';
+                    pdfContainer.style.justifyContent = 'center';
+                    pdfContainer.style.overflow = 'hidden';
+                    pdfContainer.innerHTML = `<img src="${imagemBase64}" style="width:100%; height:100%; object-fit:contain; display:block;" />`;
+                    document.body.appendChild(pdfContainer);
 
-                    const htmlContent = `
-                        <!DOCTYPE html>
-                        <html>
-                        <head>
-                            <meta charset="UTF-8">
-                            <style>
-                                * { margin: 0; padding: 0; box-sizing: border-box; }
-                                @page {
-                                    size: 58mm 30mm;
-                                    margin: 0;
-                                }
-                                body {
-                                    margin: 0;
-                                    padding: 0;
-                                    width: 58mm;
-                                    height: 30mm;
-                                    display: flex;
-                                    align-items: center;
-                                    justify-content: center;
-                                    background: #ffffff;
-                                    overflow: hidden;
-                                }
-                                img {
-                                    width: 100%;
-                                    height: 100%;
-                                    object-fit: contain;
-                                    display: block;
-                                }
-                            </style>
-                        </head>
-                        <body>
-                            <img src="${imagemBase64}" alt="Etiqueta" />
-                        </body>
-                        </html>
-                    `;
-
-                    const doc = iframe.contentWindow.document;
-                    doc.open();
-                    doc.write(htmlContent);
-                    doc.close();
-
-                    iframe.onload = function() {
-                        setTimeout(() => {
-                            iframe.contentWindow.focus();
-                            iframe.contentWindow.print();
-                            setTimeout(() => {
-                                if (iframe.parentNode) document.body.removeChild(iframe);
-                            }, 3000);
-                        }, 300);
+                    // Opções do PDF
+                    const opt = {
+                        margin: 0,
+                        filename: 'etiqueta.pdf',
+                        image: { type: 'jpeg', quality: 0.98 },
+                        html2canvas: { scale: 2, useCORS: true, logging: false },
+                        jsPDF: {
+                            unit: 'mm',
+                            format: [58, 30],
+                            orientation: 'landscape'
+                        },
+                        pagebreak: { mode: 'avoid-all' }
                     };
 
-                    setTimeout(() => {
-                        if (iframe.contentWindow && iframe.contentWindow.document && iframe.contentWindow.document.body) {
-                            iframe.contentWindow.focus();
-                            iframe.contentWindow.print();
-                            setTimeout(() => {
-                                if (iframe.parentNode) document.body.removeChild(iframe);
-                            }, 3000);
-                        }
-                    }, 1000);
-
-                    mostrarToast('Envie para a impressora POS58.', 'success');
+                    // Gera o PDF
+                    html2pdf().set(opt).from(pdfContainer).outputPdf('blob').then(function(pdfBlob) {
+                        document.body.removeChild(pdfContainer);
+                        // Abre o PDF em uma nova aba para o usuário imprimir
+                        const url = URL.createObjectURL(pdfBlob);
+                        window.open(url, '_blank');
+                        mostrarToast('PDF gerado! Imprima na POS58 com tamanho real.', 'success');
+                    }).catch(function(err) {
+                        document.body.removeChild(pdfContainer);
+                        console.error(err);
+                        mostrarToast('Erro ao gerar PDF.', 'error');
+                    });
                 } catch (err) {
                     console.error(err);
-                    mostrarToast('Erro na impressão.', 'error');
+                    mostrarToast('Erro ao gerar PDF: ' + err.message, 'error');
                 }
             }
         }
@@ -803,7 +738,7 @@
                 qrHelper.textContent = 'WhatsApp: número com DDD (apenas dígitos)';
             } else if (tipo === 'link') {
                 qrValor.placeholder = 'Ex: google.com';
-                qrHelper.textContent = 'Link: endereço do site (https adicionado automaticamente)';
+                qrHelper.textContent = 'Link: endereço do site (https adicionado)';
             } else if (tipo === 'pix') {
                 qrValor.placeholder = 'Ex: 11999999999, email@dom, 123.456.789-00';
                 qrHelper.textContent = 'Pix: telefone, email ou CPF/CNPJ';
@@ -902,5 +837,6 @@
         renderizarCards();
         console.log('✅ Etiquetas carregado.');
     </script>
+
 </body>
 </html>
