@@ -369,37 +369,6 @@
         .campo-telefone.oculto {
             display: none;
         }
-
-        /* Estilos para impressão via PC (driver POS58) */
-        @media print {
-            body * {
-                visibility: hidden;
-            }
-            #etiquetaParaImpressao,
-            #etiquetaParaImpressao * {
-                visibility: visible;
-            }
-            #etiquetaParaImpressao {
-                position: absolute;
-                left: 0;
-                top: 0;
-                width: 58mm;
-                height: 30mm;
-                margin: 0;
-                padding: 0;
-                border: none;
-                overflow: hidden;
-            }
-            #etiquetaParaImpressao img {
-                width: 100%;
-                height: 100%;
-                object-fit: contain;
-            }
-            @page {
-                size: 58mm 30mm;
-                margin: 0;
-            }
-        }
     </style>
 </head>
 <body>
@@ -461,9 +430,6 @@
 
     <!-- ===== TOAST ===== -->
     <div id="toast" class="toast"></div>
-
-    <!-- Elemento oculto para impressão via PC (populado dinamicamente) -->
-    <div id="etiquetaParaImpressao" style="display:none;"></div>
 
     <!-- ============================================================ -->
     <!-- ===== SCRIPT ===== -->
@@ -619,7 +585,7 @@
         const LABEL_HEIGHT = 200;
 
         /**
-         * Gera a etiqueta e imprime via rawbt (mobile) ou via print() (PC).
+         * Gera a etiqueta e imprime via rawbt (mobile) ou via iframe + print() (PC).
          */
         async function imprimirEtiqueta(nome, telefone, opts = {}) {
             // Se for QR Code, validar o valor
@@ -772,18 +738,95 @@
                 window.location.href = 'rawbt:' + imagemBase64;
                 mostrarToast('Etiqueta enviada para impressão (rawbt)!', 'success');
             } else {
-                // PC: impressão via window.print() com driver POS58
-                const elementoPrint = document.getElementById('etiquetaParaImpressao');
-                elementoPrint.style.display = 'block';
-                elementoPrint.innerHTML = `<img src="${imagemBase64}" alt="Etiqueta" />`;
-                // Chama a impressão
-                window.print();
-                // Limpa após a impressão (opcional)
-                setTimeout(() => {
-                    elementoPrint.style.display = 'none';
-                    elementoPrint.innerHTML = '';
-                }, 1000);
-                mostrarToast('Envie para a impressora POS58.', 'success');
+                // PC: impressão via iframe com CSS dedicado
+                try {
+                    // Cria um iframe invisível
+                    const iframe = document.createElement('iframe');
+                    iframe.style.position = 'fixed';
+                    iframe.style.left = '-9999px';
+                    iframe.style.top = '0';
+                    iframe.style.width = '0';
+                    iframe.style.height = '0';
+                    iframe.style.border = 'none';
+                    document.body.appendChild(iframe);
+
+                    // Conteúdo HTML da etiqueta com CSS de impressão otimizado
+                    const htmlContent = `
+                        <!DOCTYPE html>
+                        <html>
+                        <head>
+                            <meta charset="UTF-8">
+                            <style>
+                                * { margin: 0; padding: 0; box-sizing: border-box; }
+                                @page {
+                                    size: 58mm 30mm;
+                                    margin: 0;
+                                }
+                                body {
+                                    margin: 0;
+                                    padding: 0;
+                                    width: 58mm;
+                                    height: 30mm;
+                                    display: flex;
+                                    align-items: center;
+                                    justify-content: center;
+                                    background: #ffffff;
+                                    overflow: hidden;
+                                }
+                                img {
+                                    width: 100%;
+                                    height: 100%;
+                                    object-fit: contain;
+                                    display: block;
+                                }
+                            </style>
+                        </head>
+                        <body>
+                            <img src="${imagemBase64}" alt="Etiqueta" />
+                        </body>
+                        </html>
+                    `;
+
+                    // Escreve no iframe
+                    const doc = iframe.contentWindow.document;
+                    doc.open();
+                    doc.write(htmlContent);
+                    doc.close();
+
+                    // Aguarda o carregamento e imprime
+                    iframe.onload = function() {
+                        // Pequeno delay para garantir renderização
+                        setTimeout(() => {
+                            iframe.contentWindow.focus();
+                            iframe.contentWindow.print();
+                            // Remove o iframe após a impressão (com delay para não atrapalhar)
+                            setTimeout(() => {
+                                if (iframe.parentNode) {
+                                    document.body.removeChild(iframe);
+                                }
+                            }, 3000);
+                        }, 300);
+                    };
+
+                    // Fallback: se o onload não disparar, dispara após 1s
+                    setTimeout(() => {
+                        if (iframe.contentWindow && iframe.contentWindow.document && iframe.contentWindow.document.body) {
+                            iframe.contentWindow.focus();
+                            iframe.contentWindow.print();
+                            setTimeout(() => {
+                                if (iframe.parentNode) {
+                                    document.body.removeChild(iframe);
+                                }
+                            }, 3000);
+                        }
+                    }, 1000);
+
+                    mostrarToast('Envie para a impressora POS58.', 'success');
+
+                } catch (err) {
+                    console.error('Erro na impressão via iframe:', err);
+                    mostrarToast('Erro ao imprimir. Tente novamente.', 'error');
+                }
             }
         }
 
