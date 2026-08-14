@@ -660,8 +660,8 @@
                 document.body.appendChild(qrContainer);
                 new QRCode(qrContainer, {
                     text: qrText,
-                    width: 160,
-                    height: 160
+                    width: 200,
+                    height: 200
                 });
                 await new Promise(resolve => setTimeout(resolve, 100));
                 const canvasQr = qrContainer.querySelector('canvas');
@@ -689,7 +689,7 @@
                 container.innerHTML = `
                     <div style="flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px; padding:4px;">
                         <img src="${qrDataUrl}" style="width:165px; height:165px; border:2px solid #dce8e1;" alt="QR Code" />
-                        <div style="font-size:18px; font-weight:700; color:var(--primary); letter-spacing:0.5px; text-align:center;">${opts.titulo || 'QR Code'}</div>
+                        <!--<div style="font-size:18px; font-weight:700; color:var(--primary); letter-spacing:0.5px; text-align:center;">${opts.titulo || 'QR Code'}</div>-->
                         <div style="font-size:13px; color:var(--text-light); text-align:center;">${subtitulo}</div>
                     </div>
                 `;
