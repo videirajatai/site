@@ -565,8 +565,7 @@
                 card.className = 'card-categoria';
                 card.style.borderTop = `4px solid ${cat.cor || '#1a7a4a'}`;
                 card.innerHTML = `
-                    <!--<div class="emoji">${cat.emoji || '🏷️'}</div>-->
-                    <img src="logo1.png" style="width:130px; height:130px; <!--border-radius:50%;--> object-fit:cover; border:2px solid #dce8e1;" alt="Logo" />
+                    <div class="emoji">${cat.emoji || '🏷️'}</div>                   
                     <div class="titulo">${cat.nome}</div>
                     <div class="subtitulo">${cat.tituloImpressao}</div>
                 `;
