@@ -63,7 +63,6 @@
             align-items: center;
         }
 
-        /* ===== TOPO ===== */
         .app-header {
             width: 100%;
             max-width: 720px;
@@ -99,7 +98,6 @@
             margin-left: auto;
         }
 
-        /* ===== GRADE DE CATEGORIAS ===== */
         .grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
@@ -130,7 +128,6 @@
             border-color: var(--primary-light);
         }
 
-        /* Ícone da logo (miniatura) */
         .card-categoria .logo-mini {
             width: 56px;
             height: 56px;
@@ -154,7 +151,6 @@
             border-radius: 2rem;
         }
 
-        /* ===== MODAL ===== */
         .modal-overlay {
             display: none;
             position: fixed;
@@ -301,7 +297,6 @@
             background: #e3ede7;
         }
 
-        /* ===== TOAST ===== */
         .toast {
             position: fixed;
             bottom: 2rem;
@@ -333,7 +328,6 @@
             background: #b34a4a;
         }
 
-        /* ===== RESPONSIVO ===== */
         @media (max-width: 480px) {
             .grid {
                 grid-template-columns: repeat(2, 1fr);
@@ -353,14 +347,12 @@
             }
         }
 
-        /* campos extras do QR Code */
         #qrOptions {
             margin-top: 0.5rem;
         }
         #qrOptions label {
             margin-top: 0.5rem;
         }
-        /* Oculta os campos de nome e telefone quando evento 6 está ativo */
         .campo-nome,
         .campo-telefone {
             transition: 0.2s;
@@ -373,19 +365,17 @@
 </head>
 <body>
 
-    <!-- ===== CABEÇALHO ===== -->
     <header class="app-header">
         <img src="logo.png" alt="Logo Videira" />
         <h1>Gerador de Etiquetas</h1>
         <span>Igreja Videira · Jataí</span>
     </header>
 
-    <!-- ===== GRADE DE CATEGORIAS ===== -->
     <div class="grid" id="gradeCategorias">
-        <!-- Os cards serão gerados pelo JavaScript -->
+        <!-- Gerado por JS -->
     </div>
 
-    <!-- ===== MODAL DE IMPRESSÃO ===== -->
+    <!-- MODAL -->
     <div class="modal-overlay" id="modalImpressao">
         <div class="modal-box">
             <button class="fechar" id="fecharModal" aria-label="Fechar">&times;</button>
@@ -395,7 +385,6 @@
                 <span id="modalNomeEvento">Evento</span>
             </div>
 
-            <!-- Campos de Nome e Telefone (ocultos para evento 6) -->
             <div class="campo-nome">
                 <label for="inputNome">Nome completo</label>
                 <input type="text" id="inputNome" placeholder="Digite o nome da pessoa" />
@@ -406,7 +395,6 @@
                 <input type="tel" id="inputTelefone" placeholder="(64) 99999-9999" />
             </div>
 
-            <!-- Campos extras para QR Code (Evento 6) -->
             <div id="qrOptions" style="display:none;">
                 <label for="qrTipo">Tipo de QR Code</label>
                 <select id="qrTipo">
@@ -428,17 +416,13 @@
         </div>
     </div>
 
-    <!-- ===== TOAST ===== -->
     <div id="toast" class="toast"></div>
 
     <!-- ============================================================ -->
     <!-- ===== SCRIPT ===== -->
     <!-- ============================================================ -->
     <script>
-        /* ============================================================
-           CONFIGURAÇÃO DAS CATEGORIAS (ediTE AQUI)
-           ============================================================ */
-
+        // ========== CONFIGURAÇÃO DAS CATEGORIAS ==========
         const categorias = [{
             id: 'encontro',
             nome: 'Encontro com Deus',
@@ -464,7 +448,6 @@
             tituloImpressao: 'Radicais Livres',
             cor: '#7a5ca3'
         }, {
-            // Evento 5 - sem logo (nome ocupa toda a etiqueta)
             id: 'evento5',
             nome: 'Nome Grande',
             logo: null,
@@ -472,7 +455,6 @@
             cor: '#b34a4a',
             especial: 'semLogo'
         }, {
-            // Evento 6 - QR Code (com opções: WhatsApp, Link, Pix)
             id: 'evento6',
             nome: 'QR Code',
             logo: null,
@@ -481,21 +463,8 @@
             especial: 'qrCode'
         }];
 
-        /* ============================================================
-           FUNÇÃO MANUAL PARA GERAR PAYLOAD PIX (SEM DEPENDÊNCIAS EXTERNAS)
-           ============================================================ */
-
-        /**
-         * Gera o payload Pix completo conforme padrão BACEN (EMV).
-         * @param {string} chave - Chave Pix (telefone, email, CPF, CNPJ)
-         * @param {string} nome - Nome do destinatário
-         * @param {string} cidade - Cidade do destinatário
-         * @param {number} [valor] - Valor opcional (em reais)
-         * @param {string} [txid] - Identificador da transação (opcional)
-         * @returns {string} Payload Pix completo
-         */
+        // ========== FUNÇÃO PAYLOAD PIX ==========
         function gerarPayloadPix(chave, nome, cidade, valor = null, txid = null) {
-            // --- Funções auxiliares ---
             function adicionarCampo(id, valor) {
                 const len = String(valor).length.toString().padStart(2, '0');
                 return id + len + valor;
@@ -517,104 +486,63 @@
                 return crc.toString(16).toUpperCase().padStart(4, '0');
             }
 
-            // --- Montagem do payload ---
             let payload = '';
-
-            // 00 - Payload Format Indicator
             payload += adicionarCampo('00', '01');
-
-            // 01 - Point of Initiation Method (12 = estático, sem valor fixo)
             payload += adicionarCampo('01', '12');
-
-            // 26 - Merchant Account Information (Pix)
-            const gui = 'BR.GOV.BCB.PIX'; // GUI do Pix
+            const gui = 'BR.GOV.BCB.PIX';
             const chaveFormatada = chave.trim();
             let merchantAccount = adicionarCampo('00', gui);
             merchantAccount += adicionarCampo('01', chaveFormatada);
-            // Se houver valor, adiciona campo 54 (valor)
             if (valor !== null && valor > 0) {
-                const valorFormatado = valor.toFixed(2);
-                merchantAccount += adicionarCampo('54', valorFormatado);
+                merchantAccount += adicionarCampo('54', valor.toFixed(2));
             }
             payload += adicionarCampo('26', merchantAccount);
-
-            // 52 - Merchant Category Code (0000 = genérico)
             payload += adicionarCampo('52', '0000');
-
-            // 53 - Transaction Currency (986 = BRL)
             payload += adicionarCampo('53', '986');
-
-            // 58 - Country Code (BR)
             payload += adicionarCampo('58', 'BR');
-
-            // 59 - Merchant Name (até 25 caracteres)
-            const nomeCurto = nome.substring(0, 25);
-            payload += adicionarCampo('59', nomeCurto);
-
-            // 60 - Merchant City (até 15 caracteres)
-            const cidadeCurta = cidade.substring(0, 15);
-            payload += adicionarCampo('60', cidadeCurta);
-
-            // 62 - Additional Data Field (txid opcional)
+            payload += adicionarCampo('59', nome.substring(0, 25));
+            payload += adicionarCampo('60', cidade.substring(0, 15));
             if (txid) {
-                const txidCurto = txid.substring(0, 25);
-                payload += adicionarCampo('62', adicionarCampo('05', txidCurto));
+                payload += adicionarCampo('62', adicionarCampo('05', txid.substring(0, 25)));
             }
-
-            // 63 - CRC16 (será calculado)
             const payloadSemCRC = payload + '6304';
             const crc = calcularCRC16(payloadSemCRC);
             payload += '6304' + crc;
-
             return payload;
         }
 
-        /* ============================================================
-           FUNÇÃO PARA DETECTAR DISPOSITIVO
-           ============================================================ */
-
+        // ========== DETECTA DISPOSITIVO ==========
         function isMobile() {
             return /Android|iPhone|iPad|iPod|BlackBerry|Windows Phone/i.test(navigator.userAgent);
         }
 
-        /* ============================================================
-           FUNÇÃO DE IMPRESSÃO (COM DETECÇÃO DE DISPOSITIVO)
-           ============================================================ */
-
+        // ========== IMPRESSÃO ==========
         const LABEL_WIDTH = 384;
         const LABEL_HEIGHT = 200;
 
-        /**
-         * Gera a etiqueta e imprime via rawbt (mobile) ou via iframe + print() (PC).
-         */
         async function imprimirEtiqueta(nome, telefone, opts = {}) {
-            // Se for QR Code, validar o valor
             if (opts.qrData) {
                 const valor = opts.qrData.valor.trim();
                 if (!valor) {
                     mostrarToast('Preencha o valor do QR Code.', 'error');
                     return;
                 }
-
-                // Se for Pix, gerar payload manualmente
                 if (opts.qrData.tipo === 'pix') {
                     try {
-                        const nomeDestinatario = 'Igreja Videira';
-                        const cidadeDestinatario = 'Jatai';
-                        const payload = gerarPayloadPix(valor, nomeDestinatario, cidadeDestinatario);
+                        const payload = gerarPayloadPix(valor, 'Igreja Videira', 'Jatai');
                         opts.qrData.payload = payload;
                     } catch (err) {
-                        mostrarToast('Erro ao gerar payload Pix: ' + err.message, 'error');
+                        mostrarToast('Erro Pix: ' + err.message, 'error');
                         return;
                     }
                 } else if (opts.qrData.tipo === 'whatsapp') {
                     const numeros = valor.replace(/\D/g, '');
                     if (numeros.length < 10) {
-                        mostrarToast('Número de WhatsApp inválido (mínimo 10 dígitos).', 'error');
+                        mostrarToast('Número inválido.', 'error');
                         return;
                     }
-                    let pais = '55';
-                    let numero = numeros;
+                    let pais = '55',
+                        numero = numeros;
                     if (numeros.startsWith('55')) {
                         pais = '55';
                         numero = numeros.substring(2);
@@ -629,8 +557,7 @@
                 }
             }
 
-            // ---------------------- CONSTRUÇÃO DA ETIQUETA (HTML) ----------------------
-            // Container para montar a etiqueta (sempre usando o mesmo tamanho)
+            // Constroi o container da etiqueta
             const container = document.createElement('div');
             container.style.position = 'fixed';
             container.style.left = '-9999px';
@@ -647,21 +574,15 @@
             container.style.color = '#1e2b26';
             container.style.overflow = 'hidden';
 
-            // Conteúdo da etiqueta (mesmo de antes)
             if (opts.qrData) {
-                // QR Code (WhatsApp, Link ou Pix)
                 const qrText = opts.qrData.payload || opts.qrData.valor;
                 const qrContainer = document.createElement('div');
                 qrContainer.style.position = 'fixed';
                 qrContainer.style.left = '-9999px';
                 qrContainer.style.top = '0';
                 document.body.appendChild(qrContainer);
-                new QRCode(qrContainer, {
-                    text: qrText,
-                    width: 160,
-                    height: 160
-                });
-                await new Promise(resolve => setTimeout(resolve, 100));
+                new QRCode(qrContainer, { text: qrText, width: 160, height: 160 });
+                await new Promise(r => setTimeout(r, 100));
                 const canvasQr = qrContainer.querySelector('canvas');
                 let qrDataUrl = '';
                 if (canvasQr) {
@@ -671,28 +592,25 @@
                     if (imgQr && imgQr.src) qrDataUrl = imgQr.src;
                 }
                 document.body.removeChild(qrContainer);
-
                 if (!qrDataUrl) {
-                    mostrarToast('Erro ao gerar QR Code.', 'error');
+                    mostrarToast('Erro ao gerar QR.', 'error');
                     return;
                 }
-
                 let subtitulo = '';
                 if (opts.qrData.tipo === 'whatsapp') subtitulo = 'WhatsApp';
                 else if (opts.qrData.tipo === 'link') subtitulo = 'Link';
                 else if (opts.qrData.tipo === 'pix') subtitulo = 'Pix';
-
                 container.innerHTML = `
                     <div style="flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px; padding:4px;">
-                        <img src="${qrDataUrl}" style="width:170px; height:170px; border:2px solid #dce8e1; border-radius:12px;" alt="QR Code" />
-                        <div style="font-size:18px; font-weight:700; color:var(--primary); letter-spacing:0.5px; text-align:center;">${opts.titulo || 'QR Code'}</div>
-                        <div style="font-size:13px; color:var(--text-light); text-align:center;">${subtitulo}</div>
+                        <img src="${qrDataUrl}" style="width:165px; height:165px; border:2px solid #dce8e1;" alt="QR" />
+                        <div style="font-size:18px; font-weight:700; color:var(--primary); text-align:center;">${opts.titulo || 'QR Code'}</div>
+                        <div style="font-size:13px; color:var(--text-light);">${subtitulo}</div>
                     </div>
                 `;
             } else if (opts.semLogo) {
                 container.innerHTML = `
                     <div style="flex:1; display:flex; flex-direction:column; justify-content:center; align-items:center; padding:0 8px; text-align:center;">
-                        <div style="font-size:38px; font-weight:800; line-height:1.2; word-break:break-word; max-width:100%;">${escapeHtml(nome)}</div>
+                        <div style="font-size:38px; font-weight:800; line-height:1.2; word-break:break-word;">${escapeHtml(nome)}</div>
                         <div style="font-size:22px; font-weight:500; color:#4d6b5f; margin-top:6px;">📞 ${escapeHtml(telefone) || '—'}</div>
                     </div>
                 `;
@@ -700,8 +618,8 @@
                 const logoUrl = opts.logoUrl || 'logo.png';
                 container.innerHTML = `
                     <div style="flex:0 0 120px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px;">
-                        <img src="${logoUrl}" style="width:130px; height:130px; border-radius:0%; object-fit:cover; border:2px solid #dce8e1;" alt="Logo" />
-                        <div style="font-size:13px; font-weight:700; color:var(--primary); letter-spacing:0.5px; text-align:center;">${opts.titulo || ''}</div>
+                        <img src="${logoUrl}" style="width:130px; height:130px; border:2px solid #dce8e1; object-fit:cover;" alt="Logo" />
+                        <div style="font-size:13px; font-weight:700; color:var(--primary); text-align:center;">${opts.titulo || ''}</div>
                     </div>
                     <div style="flex:1; min-width:0; display:flex; flex-direction:column; justify-content:center; gap:2px; padding-right:4px;">
                         <div style="font-size:30px; font-weight:800; line-height:1.1; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; word-break:break-word;">${escapeHtml(nome)}</div>
@@ -712,7 +630,6 @@
 
             document.body.appendChild(container);
 
-            // ---------------------- GERAR IMAGEM (CANVAS) ----------------------
             let imagemBase64 = '';
             try {
                 const canvas = await html2canvas(container, {
@@ -727,20 +644,18 @@
                 document.body.removeChild(container);
             } catch (err) {
                 document.body.removeChild(container);
-                console.error('Erro ao gerar imagem:', err);
-                mostrarToast('Erro ao gerar a etiqueta.', 'error');
+                console.error(err);
+                mostrarToast('Erro ao gerar imagem.', 'error');
                 return;
             }
 
-            // ---------------------- IMPRESSÃO SEGUNDO DISPOSITIVO ----------------------
+            // ----- IMPRESSÃO -----
             if (isMobile()) {
-                // MOBILE: rawbt (mantido)
                 window.location.href = 'rawbt:' + imagemBase64;
-                mostrarToast('Etiqueta enviada para impressão (rawbt)!', 'success');
+                mostrarToast('Enviado para rawbt!', 'success');
             } else {
-                // PC: impressão via iframe com CSS dedicado
+                // PC: iframe com CSS de impressão
                 try {
-                    // Cria um iframe invisível
                     const iframe = document.createElement('iframe');
                     iframe.style.position = 'fixed';
                     iframe.style.left = '-9999px';
@@ -750,7 +665,6 @@
                     iframe.style.border = 'none';
                     document.body.appendChild(iframe);
 
-                    // Conteúdo HTML da etiqueta com CSS de impressão otimizado
                     const htmlContent = `
                         <!DOCTYPE html>
                         <html>
@@ -787,53 +701,40 @@
                         </html>
                     `;
 
-                    // Escreve no iframe
                     const doc = iframe.contentWindow.document;
                     doc.open();
                     doc.write(htmlContent);
                     doc.close();
 
-                    // Aguarda o carregamento e imprime
                     iframe.onload = function() {
-                        // Pequeno delay para garantir renderização
                         setTimeout(() => {
                             iframe.contentWindow.focus();
                             iframe.contentWindow.print();
-                            // Remove o iframe após a impressão (com delay para não atrapalhar)
                             setTimeout(() => {
-                                if (iframe.parentNode) {
-                                    document.body.removeChild(iframe);
-                                }
+                                if (iframe.parentNode) document.body.removeChild(iframe);
                             }, 3000);
                         }, 300);
                     };
 
-                    // Fallback: se o onload não disparar, dispara após 1s
                     setTimeout(() => {
                         if (iframe.contentWindow && iframe.contentWindow.document && iframe.contentWindow.document.body) {
                             iframe.contentWindow.focus();
                             iframe.contentWindow.print();
                             setTimeout(() => {
-                                if (iframe.parentNode) {
-                                    document.body.removeChild(iframe);
-                                }
+                                if (iframe.parentNode) document.body.removeChild(iframe);
                             }, 3000);
                         }
                     }, 1000);
 
                     mostrarToast('Envie para a impressora POS58.', 'success');
-
                 } catch (err) {
-                    console.error('Erro na impressão via iframe:', err);
-                    mostrarToast('Erro ao imprimir. Tente novamente.', 'error');
+                    console.error(err);
+                    mostrarToast('Erro na impressão.', 'error');
                 }
             }
         }
 
-        /* ============================================================
-           UTILITÁRIOS
-           ============================================================ */
-
+        // ========== UTILITÁRIOS ==========
         function escapeHtml(str) {
             if (!str) return '';
             return str.replace(/[&<>]/g, m => m === '&' ? '&amp;' : (m === '<' ? '&lt;' : '&gt;'));
@@ -852,10 +753,7 @@
             }, 3000);
         }
 
-        /* ============================================================
-           INTERFACE - CARDS E MODAL
-           ============================================================ */
-
+        // ========== INTERFACE ==========
         const grade = document.getElementById('gradeCategorias');
         const modal = document.getElementById('modalImpressao');
         const fecharModalBtn = document.getElementById('fecharModal');
@@ -904,10 +802,10 @@
                 qrValor.placeholder = 'Ex: 11999999999';
                 qrHelper.textContent = 'WhatsApp: número com DDD (apenas dígitos)';
             } else if (tipo === 'link') {
-                qrValor.placeholder = 'Ex: google.com ou https://...';
-                qrHelper.textContent = 'Link: digite o endereço do site (https será adicionado automaticamente)';
+                qrValor.placeholder = 'Ex: google.com';
+                qrHelper.textContent = 'Link: endereço do site (https adicionado automaticamente)';
             } else if (tipo === 'pix') {
-                qrValor.placeholder = 'Ex: 11999999999, email@dominio.com, 123.456.789-00';
+                qrValor.placeholder = 'Ex: 11999999999, email@dom, 123.456.789-00';
                 qrHelper.textContent = 'Pix: telefone, email ou CPF/CNPJ';
             }
         }
@@ -916,11 +814,9 @@
             categoriaSelecionada = categoria;
             modalLogo.src = categoria.logo || 'logo.png';
             modalNomeEvento.textContent = categoria.nome;
-
             inputNome.value = '';
             inputTelefone.value = '';
             qrValor.value = '';
-
             qrOptions.style.display = 'none';
             campoNome.classList.remove('oculto');
             campoTelefone.classList.remove('oculto');
@@ -932,7 +828,6 @@
                 qrTipo.value = 'whatsapp';
                 atualizarHelper();
             }
-
             modal.classList.add('aberto');
             if (!campoNome.classList.contains('oculto')) {
                 inputNome.focus();
@@ -948,47 +843,33 @@
 
         function acaoImprimir() {
             if (!categoriaSelecionada) {
-                mostrarToast('Nenhuma categoria selecionada.', 'error');
+                mostrarToast('Selecione uma categoria.', 'error');
                 return;
             }
-
             const opts = {};
-
             if (categoriaSelecionada.especial === 'semLogo') {
                 const nome = inputNome.value.trim();
                 const telefone = inputTelefone.value.trim();
-                if (!nome) {
-                    mostrarToast('Digite o nome da pessoa.', 'error');
-                    inputNome.focus();
-                    return;
-                }
+                if (!nome) { mostrarToast('Digite o nome.', 'error');
+                    inputNome.focus(); return; }
                 opts.semLogo = true;
                 imprimirEtiqueta(nome, telefone, opts);
-                return;
             } else if (categoriaSelecionada.especial === 'qrCode') {
                 const tipo = qrTipo.value;
                 const valor = qrValor.value.trim();
-                if (!valor) {
-                    mostrarToast('Preencha o valor do QR Code.', 'error');
-                    qrValor.focus();
-                    return;
-                }
+                if (!valor) { mostrarToast('Preencha o valor.', 'error');
+                    qrValor.focus(); return; }
                 opts.qrData = { tipo, valor };
                 opts.titulo = categoriaSelecionada.tituloImpressao || 'QR Code';
                 imprimirEtiqueta('', '', opts);
-                return;
             } else {
                 const nome = inputNome.value.trim();
                 const telefone = inputTelefone.value.trim();
-                if (!nome) {
-                    mostrarToast('Digite o nome da pessoa.', 'error');
-                    inputNome.focus();
-                    return;
-                }
+                if (!nome) { mostrarToast('Digite o nome.', 'error');
+                    inputNome.focus(); return; }
                 opts.logoUrl = categoriaSelecionada.logo || 'logo.png';
                 opts.titulo = categoriaSelecionada.tituloImpressao || '';
                 imprimirEtiqueta(nome, telefone, opts);
-                return;
             }
         }
 
@@ -996,11 +877,7 @@
         fecharModalBtn.addEventListener('click', fecharModal);
         cancelarBtn.addEventListener('click', fecharModal);
         imprimirBtn.addEventListener('click', acaoImprimir);
-
-        modal.addEventListener('click', function(e) {
-            if (e.target === modal) fecharModal();
-        });
-
+        modal.addEventListener('click', (e) => { if (e.target === modal) fecharModal(); });
         qrTipo.addEventListener('change', atualizarHelper);
 
         inputNome.addEventListener('keydown', (e) => {
@@ -1014,22 +891,16 @@
             }
         });
         inputTelefone.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter') {
-                e.preventDefault();
-                acaoImprimir();
-            }
+            if (e.key === 'Enter') { e.preventDefault();
+                acaoImprimir(); }
         });
         qrValor.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter') {
-                e.preventDefault();
-                acaoImprimir();
-            }
+            if (e.key === 'Enter') { e.preventDefault();
+                acaoImprimir(); }
         });
 
-        // Inicializa
         renderizarCards();
-        console.log('✅ Etiquetas carregado. Categorias:', categorias.map(c => c.nome).join(', '));
+        console.log('✅ Etiquetas carregado.');
     </script>
-
 </body>
 </html>
